@@ -6,7 +6,7 @@
 % (c) —калько ёрий, ћ‘“» 2017
 
 
-function grid_charact()
+%function grid_charact()
 format long;
 %% Ѕлок дл€ описани€ начальных данных:
 %«асекаем врем€ работы программы:
@@ -321,11 +321,19 @@ unext_p1_p2_n = zeros(sp1,sp2,sn);
 u_p1_p2_n_jt(:,:,:,1) = u0_p1_p2_n;
 uprev_p1_p2_n(:,:,:) = u_p1_p2_n_jt(:,:,:,1);
 indk1 = 1:sk1;  indk2 = 1:sk2;
+
+
 amplitude_p1w_sp2 = zeros(sp1,1);   %% ИСТОЧНИКИ
 amplitude_p1w_sp2((sp1+1)/2-1, 1) = 10;    
-    amplitude_p1w_sp2((sp1+1)/2, 1) = 10;
-        amplitude_p1w_sp2((sp1+1)/2+1, 1) = 10;
-
+amplitude_p1w_sp2((sp1+1)/2, 1) = 10;
+amplitude_p1w_sp2((sp1+1)/2+1, 1) = 10;
+amplitude_p1w_sp2(round((sp1+1)/3)-1, 1) = 10;    
+amplitude_p1w_sp2(round((sp1+1)/3), 1) = 10;
+amplitude_p1w_sp2(round((sp1+1)/3)+1, 1) = 10;
+amplitude_p1w_sp2(round(2*(sp1+1)/3)-1, 1) = 10;    
+amplitude_p1w_sp2(round(2*(sp1+1)/3), 1) = 10;
+amplitude_p1w_sp2(round(2*(sp1+1)/3)+1, 1) = 10;
+        
 ind_p1w_p1 = zeros(sp1,3);  lengthind_p1w = zeros(sp1,1);
 p1w = 1;    ind_p1w_p1(p1w,1) = p1w;    ind_p1w_p1(p1w,2) = p1w+1;  lengthind_p1w(p1w) = 2;
 for p1w = 2:(sp1-1)
@@ -400,14 +408,41 @@ Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1
 [per, sit] = size(T_jt);    clear per;
 
         for it=1:1:sit
-            surf(x_p2,x_p1,reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]));
-            axis([ x2min x2max x1min x1max Kmin Kmax]);
-            pause(1);
-            F(it) = getframe; %#ok<AGROW>
+            %surface = reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]);
+            %vtkwrite('surf.vtk','structured_grid',x_p1,x_p2,'scalars', surface)
+            %surf(x_p2,x_p1,reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]));
+            %axis([ x2min x2max x1min x1max Kmin Kmax]);
+            %pause(1);
+            %F(it) = getframe; %#ok<AGROW>
+            tic
+            name = sprintf('res%d.vtk', it);
+            f = fopen(name, 'wb');
+            fprintf(f, '# vtk DataFile Version 3.0\n');
+            fprintf(f, 'Exported from MATLAB\n'); % Comment string
+            fprintf(f, 'BINARY\n');
+            fprintf(f, 'DATASET RECTILINEAR_GRID\n');
+            fprintf(f, 'DIMENSIONS %d %d 1\n', sp1, sp2);
+            fprintf(f, 'X_COORDINATES %d float\n', sp1);
+            w = typecast(swapbytes(single(x_p1)), 'uint8');
+            fwrite(f, w);
+            fprintf(f, 'Y_COORDINATES %d float\n', sp2);
+            w = typecast(swapbytes(single(x_p2)), 'uint8');
+            fwrite(f, w);
+            fprintf(f, 'Z_COORDINATES 1 float\n');
+            w = typecast(swapbytes(single(0)), 'uint8');
+            fwrite(f, w);
+            fprintf(f, 'CELL_DATA %d\n', (sp1-1) * (sp2-1));
+            % No cell data
+            fprintf(f, 'POINT_DATA %d\n', sp1 * sp2);
+            fprintf(f, 'SCALARS z float\nLOOKUP_TABLE default\n');
+            w = typecast(swapbytes(single(reshape(K_p1_p2_jt(:,:,it),1, []))), 'uint8');
+            fwrite(f, w);
+            fclose(f);
+            toc
         end
         
-        movie(F, 3, 5);
+        %movie(F, 3, 5);
 
-end
+%end
 
 
