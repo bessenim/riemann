@@ -1,3 +1,12 @@
+% Ётот файл получен из global_init2_1_3
+% јдаптирован дл€ решени€ системы уравнений динамической упругости
+% многомерной модификацией сеточно-характеристического метода, 
+% использующей фундаментальное решение оператора задачи.
+
+% (c) —калько ёрий, ћ‘“» 2017
+
+
+%function grid_charact()
 format long;
 %% Ѕлок дл€ описани€ начальных данных:
 %«асекаем врем€ работы программы:
@@ -23,7 +32,7 @@ A2_m_n = ...
 
 sn = size(A1_m_n,1);    sk1 = sn;   sk2 = sn;
 
-omega = 10;                                                                  %частота действующей силы
+omega = 100;                                                                  %частота действующей силы
 % %¬ременные параметры:
 T = 4.1;
 Ninput= 21;
@@ -405,7 +414,7 @@ Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1
             %axis([ x2min x2max x1min x1max Kmin Kmax]);
             %pause(1);
             %F(it) = getframe; %#ok<AGROW>
-            %tic
+            tic
             name = sprintf('res%d.vtk', it);
             f = fopen(name, 'wb');
             fprintf(f, '# vtk DataFile Version 3.0\n');
@@ -427,7 +436,7 @@ Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1
             w = typecast(swapbytes(single(reshape(K_p1_p2_jt(:,:,it),1, []))), 'uint8');
             fwrite(f, w);
             fclose(f);
-            %toc
+            toc
         end
         
         %movie(F, 3, 5);

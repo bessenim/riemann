@@ -1,5 +1,5 @@
-x = linspace(0, 10, 20);
-y = linspace(-5, 5, 30);
+x = linspace(0, 10, 2000);
+y = linspace(-5, 5, 3000);
 
 [Y, X] = meshgrid(y, x);
 
@@ -15,14 +15,16 @@ f = fopen('res.vtk', 'wb');
 fprintf(f, '# vtk DataFile Version 3.0\n');
 fprintf(f, 'Exported from MATLAB\n'); % Comment string
 fprintf(f, 'BINARY\n');
-fprintf(f, 'DATASET STRUCTURED_GRID\n');
+fprintf(f, 'DATASET RECTILINEAR_GRID\n');
 fprintf(f, 'DIMENSIONS %d %d 1\n', nx, ny);
-fprintf(f, 'POINTS %d float\n', nx * ny);
-R = zeros(3, nx, ny);
-R(1, :, :) = X;
-R(2, :, :) = Y;
-R(3, :, :) = Z;
-w = typecast(swapbytes(single(R(:))), 'uint8');
+fprintf(f, 'X_COORDINATES %d float\n', nx);
+w = typecast(swapbytes(single(x)), 'uint8');
+fwrite(f, w);
+fprintf(f, 'Y_COORDINATES %d float\n', ny);
+w = typecast(swapbytes(single(y)), 'uint8');
+fwrite(f, w);
+fprintf(f, 'Z_COORDINATES 1 float\n');
+w = typecast(swapbytes(single(0)), 'uint8');
 fwrite(f, w);
 fprintf(f, 'CELL_DATA %d\n', (nx-1) * (ny-1));
 % No cell data
