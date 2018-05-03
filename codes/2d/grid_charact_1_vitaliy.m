@@ -25,7 +25,7 @@ sn = size(A1_m_n,1);    sk1 = sn;   sk2 = sn;
 
 omega = 10;                                                                  %частота действующей силы
 % %¬ременные параметры:
-T = 4.1;
+T = 1.2;
 Ninput= 21;
 
 %   «адаем область, в которой ищем решение
@@ -37,11 +37,11 @@ K1max = 1;
 K2max = 1;  
 
 %   «адаем сетку по пространственным переменным x_ii1 и x_ii2
-II1max = 2*50+1;  I1max = II1max-1; si1 = I1max;                            % оличество узлов сетки-всегда нечетное
+II1max = 2*30+1;  I1max = II1max-1; si1 = I1max;                            % оличество узлов сетки-всегда нечетное
 x_ii1 = d1min:((d1max-d1min)/si1):d1max;
 h_i1 = x_ii1(2:end)-x_ii1(1:(end-1));
 
-II2max = 2*50+1;  I2max = II2max-1; si2 = I2max;                            % оличество узлов сетки-всегда нечетное
+II2max = 2*30+1;  I2max = II2max-1; si2 = I2max;                            % оличество узлов сетки-всегда нечетное
 x_ii2 = d2min:((d2max-d2min)/si2):d2max;
 h_i2 = x_ii2(2:end)-x_ii2(1:(end-1));
 
@@ -194,7 +194,7 @@ for k2=1:sn
 end
 clear A2_m_n R2_m_n LAMBD2_m_n L2_m_n D_k2_m_n ;
 
-deltat = min(min(h_i1)/max(abs(lambd1)), min(h_i2)/max(abs(lambd2)));
+deltat = min(min(h_i1)/max(abs(lambd1)), min(h_i2)/max(abs(lambd2))) * 0.25;
 Ntau = fix(T/deltat);
 deltaNinput = fix((Ntau+1)/(Ninput-1));
 %   it = 1:1:(deltaNinput*Ninput);
@@ -280,25 +280,53 @@ invA_m_n = inv(A_m_n);
 
 %%  Ќачальные данные u0_p1_p2_n
 u0_p1_p2_n = zeros( sp1,sp2,sn );
-amplitudeu0 = 0;
-xstar_i = [0 0];
-diam = 0.1;
-centerline = 0.3;
-radius_p1_p2_i = zeros(sp1,sp2,sdim);
-normradius_p1_p2 = zeros(sp1,sp2);
-for p1 = 1:sp1
-    for p2 = 1:sp2
-        radius_p1_p2_i(p1,p2,:) = x_p1_p2_i(p1,p2,:) - reshape(xstar_i, [ 1 1 sdim ]);
-        normradius_p1_p2(p1,p2) = norm(reshape(radius_p1_p2_i(p1,p2,:), [ sdim 1 ]),2);
+% amplitudeu0 = 0.1;
+% xstar_i = [0 0];
+% diam = 0.1;
+% centerline = 0.3;
+% radius_p1_p2_i = zeros(sp1,sp2,sdim);
+% normradius_p1_p2 = zeros(sp1,sp2);
+% for p1 = 1:sp1
+%     for p2 = 1:sp2
+%         radius_p1_p2_i(p1,p2,:) = x_p1_p2_i(p1,p2,:) - reshape(xstar_i, [ 1 1 sdim ]);
+%         normradius_p1_p2(p1,p2) = norm(reshape(radius_p1_p2_i(p1,p2,:), [ sdim 1 ]),2);
+%     end
+% end
+% 
+% [indp1,indp2] = find(abs(normradius_p1_p2-centerline) <= diam);
+% lengthind = length(indp1);
+% for point = 1:lengthind
+%     u0_p1_p2_n(indp1(point),indp2(point),4:5) = amplitudeu0*...
+%        (radius_p1_p2_i(indp1(point),indp2(point),:)/normradius_p1_p2(indp1(point),indp2(point)))...
+%        *(1 + cos((pi / diam)*(normradius_p1_p2(indp1(point),indp2(point))-centerline)));
+% end
+
+for p2 = 1:((sp2-1)/2 - 1)
+    for p1 = 1:sp1
+        u0_p1_p2_n(p1,p2,1) = 0;
+        u0_p1_p2_n(p1,p2,2) = 0;
+        u0_p1_p2_n(p1,p2,3) = 0;
+        u0_p1_p2_n(p1,p2,4) = 0;
+        u0_p1_p2_n(p1,p2,5) = 0;
     end
 end
-
-[indp1,indp2] = find(abs(normradius_p1_p2-centerline) <= diam);
-lengthind = length(indp1);
-for point = 1:lengthind
-    u0_p1_p2_n(indp1(point),indp2(point),4:5) = amplitudeu0*...
-       (radius_p1_p2_i(indp1(point),indp2(point),:)/normradius_p1_p2(indp1(point),indp2(point)))...
-       *(1 + cos((pi / diam)*(normradius_p1_p2(indp1(point),indp2(point))-centerline)));
+for p2 = ((sp2-1)/2)
+    for p1 = 1:sp1
+        u0_p1_p2_n(p1,p2,1) = 0;
+        u0_p1_p2_n(p1,p2,2) = 0;
+        u0_p1_p2_n(p1,p2,3) = 0.948683298050514/2;
+        u0_p1_p2_n(p1,p2,4) = 0;
+        u0_p1_p2_n(p1,p2,5) = -0.316227766016838/2;
+    end
+end
+for p2 = ((sp2-1)/2 + 1):sp2
+    for p1 = 1:sp1
+        u0_p1_p2_n(p1,p2,1) = 0;
+        u0_p1_p2_n(p1,p2,2) = 0;
+        u0_p1_p2_n(p1,p2,3) = 0.948683298050514;
+        u0_p1_p2_n(p1,p2,4) = 0;
+        u0_p1_p2_n(p1,p2,5) = -0.316227766016838;
+    end
 end
 
 %%   ƒелаем шаги по времени
@@ -315,9 +343,9 @@ indk1 = 1:sk1;  indk2 = 1:sk2;
 
 
 amplitude_p1w_sp2 = zeros(sp1,1);   %% ИСТОЧНИКИ
-amplitude_p1w_sp2((sp1+1)/2-1, 1) = 10;    
-amplitude_p1w_sp2((sp1+1)/2, 1) = 10;
-amplitude_p1w_sp2((sp1+1)/2+1, 1) = 10;
+%amplitude_p1w_sp2((sp1+1)/2-1, 1) = 10;    
+amplitude_p1w_sp2((sp1+1)/2, 1) = 0;
+%amplitude_p1w_sp2((sp1+1)/2+1, 1) = 10;
 %amplitude_p1w_sp2(round((sp1+1)/3)-1, 1) = 10;    
 %amplitude_p1w_sp2(round((sp1+1)/3), 1) = 10;
 %amplitude_p1w_sp2(round((sp1+1)/3)+1, 1) = 10;
@@ -381,7 +409,8 @@ K_p1_p2_jt = zeros(sp1,sp2,sjt);
 for p1 = 1:sp1
     for p2 = 1:sp2
         for jt = 1:sjt
-            K_p1_p2_jt(p1,p2,jt) = sqrt(u_p1_p2_n_jt(p1,p2,4,jt)^2 + u_p1_p2_n_jt(p1,p2,5,jt)^2);
+            K_p1_p2_jt(p1,p2,jt) = u_p1_p2_n_jt(p1,p2,4,jt);
+            %K_p1_p2_jt(p1,p2,jt) = sqrt((u_p1_p2_n_jt(p1,p2,4,jt).^2 + u_p1_p2_n_jt(p1,p2,5,jt).^2))*1;
         end
     end
 end
@@ -392,7 +421,8 @@ toc;
 x1min = min(x_p1);                       x1max = max(x_p1);
 x2min = min(x_p2);                       x2max = max(x_p2);
 
-Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1_p2_jt, [], 1), [], 2), [], 3);
+Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);  
+Kmax = max(max(max(K_p1_p2_jt, [], 1), [], 2), [], 3);
 
 % [X1,X2] = meshgrid(x_p1,x_p2);
 
@@ -433,5 +463,10 @@ Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1
         %movie(F, 3, 5);
 
 %end
-
+% K6_sq = zeros(11);
+% for i = 1:1:11
+%     for j = 1:1:11
+%         K6_sq(i, j) = K_p1_p2_jt(i*32-31,j*32-31,10);
+%     end
+% end
 

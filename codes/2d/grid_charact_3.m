@@ -261,7 +261,7 @@ end
 hmax_i = max(hmax_g_i,[],1);
 hmin_i = min(hmin_g_i,[],1);
 
-deltat = min(hmin_i./transpose(max(abs(lambd_i_k),[],2)));
+deltat = min(hmin_i./transpose(max(abs(lambd_i_k),[],2)))*0.5;
 Ntau = fix(T/deltat);
 deltaNinput = fix((Ntau+1)/(Ninput-1));
 
@@ -276,6 +276,12 @@ Aadhes_m_n(1,1) = 1;    Aadhes_m_n(1,1+sn) = -1;
 Aadhes_m_n(2,3) = 1;    Aadhes_m_n(2,3+sn) = -1;
 Aadhes_m_n(3,4) = 1;    Aadhes_m_n(3,4+sn) = -1;
 Aadhes_m_n(4,5) = 1;    Aadhes_m_n(4,5+sn) = -1;
+
+Aadhesy_m_n = zeros(4,2*sn); 
+Aadhesy_m_n(1,2) = 1;    Aadhesy_m_n(1,2+sn) = -1;
+Aadhesy_m_n(2,3) = 1;    Aadhesy_m_n(2,3+sn) = -1;
+Aadhesy_m_n(3,4) = 1;    Aadhesy_m_n(3,4+sn) = -1;
+Aadhesy_m_n(4,5) = 1;    Aadhesy_m_n(4,5+sn) = -1;
 
 A1adhes_m_n = zeros(7,2*sn); 
 A1adhes_m_n(1,1) = 1;    A1adhes_m_n(1,1+sn) = -1;
@@ -353,12 +359,12 @@ g = 1;
 %   bound = 4   g = 1
     for p1 = 2:(sp_g_i(g,1))
         for p2 = 1
-             A = Aadhes_m_n;
+             A = Aadhesy_m_n;
 %            A = Asliding_m_n;
             gmin = 4;   gpls = 1;
             C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
+            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
+            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(cat(1,C,A))
@@ -424,12 +430,12 @@ g = 2;
 %   bound = 4   g = 2
     for p1 = 2:(sp_g_i(g,1))
         for p2 = 1
-             A = Aadhes_m_n;
+             A = Aadhesy_m_n;
 %            A = Asliding_m_n;
             gmin = 5;   gpls = 2;
             C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
+            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
+            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(cat(1,C,A))
@@ -475,12 +481,12 @@ g = 3;
 %   bound = 4
     for p1 = 2:(sp_g_i(g,1))
         for p2 = 1
-             A = Aadhes_m_n;
+             A = Aadhesy_m_n;
 %            A = Asliding_m_n;
             gmin = 6;   gpls = 3;
             C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
+            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
+            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(cat(1,C,A))
@@ -552,12 +558,12 @@ g = 4;
 %   bound = 4   g = 4
     for p1 = 2:(sp_g_i(g,1))
         for p2 = 1
-             A = Aadhes_m_n;
+             A = Aadhesy_m_n;
 %            A = Asliding_m_n;
             gmin = 7;   gpls = 4;
             C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
+            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
+            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(cat(1,C,A))
@@ -630,12 +636,12 @@ g = 5;
 %   bound = 4   g = 5
     for p1 = 2:(sp_g_i(g,1))
         for p2 = 1
-             A = Aadhes_m_n;
+             A = Aadhesy_m_n;
 %            A = Asliding_m_n;
             gmin = 8;   gpls = 5;
             C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
+            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
+            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(cat(1,C,A))
@@ -688,12 +694,12 @@ g = 6;
 %   bound = 4
     for p1 = 2:(sp_g_i(g,1))
         for p2 = 1
-             A = Aadhes_m_n;
+             A = Aadhesy_m_n;
 %            A = Asliding_m_n;
             gmin = 9;   gpls = 6;
             C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
+            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
+            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(2,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
 %             rank(cat(1,C,A))
@@ -1131,6 +1137,18 @@ for jt=2:sjt
                 unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(1,p2,:) = W(sn+1:sn+sn,1);
             end
         end
+        %   bound = 4   g = 1
+        for p1 = 2:(sp_g_i(g,1)-1)
+            for p2 = 1
+                gmin = 4;   gpls = 1;
+                r11_m = squeeze(LGE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+                r12_m = squeeze(LLE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gpls}(p1,1,:));
+                r21_m(1:4,1) = 0; 
+                rxx_m = cat(1,r11_m,r12_m,r21_m);
+                W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+                unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(p1,1,:) = W(sn+1:sn+sn,1);
+            end
+        end
 %         for p1 = sp_g_i(g,1)
 %             for p2 = sp_g_i(g,2)
 %                 gmin = 1;   gpls = 2;
@@ -1167,6 +1185,18 @@ for jt=2:sjt
                 unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(1,p2,:) = W(sn+1:sn+sn,1);
             end
         end
+        
+        for p1 = 2:(sp_g_i(g,1)-1)
+            for p2 = 1
+                gmin = 5;   gpls = 2;
+                r11_m = squeeze(LGE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+                r12_m = squeeze(LLE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gpls}(p1,1,:));
+                r21_m(1:4,1) = 0; 
+                rxx_m = cat(1,r11_m,r12_m,r21_m);
+                W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+                unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(p1,1,:) = W(sn+1:sn+sn,1);
+            end
+        end
 %         for p1 = sp_g_i(g,1)
 %             for p2 = sp_g_i(g,2)
 %                 gmin = 2;   gpls = 3;
@@ -1191,13 +1221,177 @@ for jt=2:sjt
                 unext_g_p1_p2_n{g}(p1,p2,:) = R_g_p1_p2_m_n{g,p1,p2}*rx_m;
             end
         end
+  
+         for p1 = 2:(sp_g_i(g,1)-1)
+            for p2 = 1
+                gmin = 6;   gpls = 3;
+                r11_m = squeeze(LGE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+                r12_m = squeeze(LLE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gpls}(p1,1,:));
+                r21_m(1:4,1) = 0; 
+                rxx_m = cat(1,r11_m,r12_m,r21_m);
+                W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+                unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(p1,1,:) = W(sn+1:sn+sn,1);
+            end
+        end
+        
+ 
+        g = 4;
+        %   bound = 3   g = 1
+        for p1 = sp_g_i(g,1)
+            for p2 = 2:(sp_g_i(g,2)-1)
+                gmin = 4;   gpls = 5;
+                r11_m = squeeze(LGE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+                r12_m = squeeze(LLE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gpls}(1,p2,:));
+                r21_m(1:4,1) = 0; 
+                rxx_m = cat(1,r11_m,r12_m,r21_m);
+                W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+                unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(1,p2,:) = W(sn+1:sn+sn,1);
+            end
+        end
+        %   bound = 4   g = 4
+        for p1 = 2:(sp_g_i(g,1)-1)
+            for p2 = 1
+                gmin = 7;   gpls = 4;
+                r11_m = squeeze(LGE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+                r12_m = squeeze(LLE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gpls}(p1,1,:));
+                r21_m(1:4,1) = 0; 
+                rxx_m = cat(1,r11_m,r12_m,r21_m);
+                W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+                unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(p1,1,:) = W(sn+1:sn+sn,1);
+            end
+        end
+%         for p1 = sp_g_i(g,1)
+%             for p2 = sp_g_i(g,2)
+%                 gmin = 1;   gpls = 2;
+%                 r11_m = squeeze(LGE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+%                 r12_m = squeeze(LLE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gpls}(1,p2,:));
+%                 r21_m(1:4,1) = 0; 
+%                 rxx_m = cat(1,r11_m,r12_m,r21_m);
+%                 W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+%                 unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(1,p2,:) = W(sn+1:sn+sn,1);
+%             end
+%         end
+        
+        g = 5;
+    %   bound = 3     g = 5
+        for p1 = sp_g_i(g,1)
+            for p2 = 2:(sp_g_i(g,2)-1)
+                gmin = 5;   gpls = 6;
+                r11_m = squeeze(LGE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+                r12_m = squeeze(LLE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gpls}(1,p2,:));
+                r21_m = zeros(4,1); 
+                rxx_m = cat(1,r11_m,r12_m,r21_m);
+                W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+                unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(1,p2,:) = W(sn+1:sn+sn,1);
+            end
+        end
+        
+         for p1 = 2:(sp_g_i(g,1)-1)
+            for p2 = 1
+                gmin = 8;   gpls = 5;
+                r11_m = squeeze(LGE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+                r12_m = squeeze(LLE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gpls}(p1,1,:));
+                r21_m(1:4,1) = 0; 
+                rxx_m = cat(1,r11_m,r12_m,r21_m);
+                W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+                unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(p1,1,:) = W(sn+1:sn+sn,1);
+            end
+        end
+%         for p1 = sp_g_i(g,1)
+%             for p2 = sp_g_i(g,2)
+%                 gmin = 2;   gpls = 3;
+%                 r11_m = squeeze(LGE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+%                 r12_m = squeeze(LLE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gpls}(1,p2,:));
+%                 r21_m = zeros(4,1); 
+%                 rxx_m = cat(1,r11_m,r12_m,r21_m);
+%                 W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+%                 unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(1,p2,:) = W(sn+1:sn+sn,1);
+%             end
+%         end
+        
+        g = 6;
+        for p1 = 2:(sp_g_i(g,1)-1)
+            for p2 = 1
+                gmin = 9;   gpls = 6;
+                r11_m = squeeze(LGE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+                r12_m = squeeze(LLE0_i_m_n(2,:,:))*squeeze(unext_g_p1_p2_n{gpls}(p1,1,:));
+                r21_m(1:4,1) = 0; 
+                rxx_m = cat(1,r11_m,r12_m,r21_m);
+                W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+                unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(p1,1,:) = W(sn+1:sn+sn,1);
+            end
+        end
+    
+ 
+        g = 7;
+        %   bound = 3   g = 7
+        for p1 = sp_g_i(g,1)
+            for p2 = 2:(sp_g_i(g,2)-1)
+                gmin = 1;   gpls = 2;
+                r11_m = squeeze(LGE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+                r12_m = squeeze(LLE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gpls}(1,p2,:));
+                r21_m(1:4,1) = 0; 
+                rxx_m = cat(1,r11_m,r12_m,r21_m);
+                W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+                unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(1,p2,:) = W(sn+1:sn+sn,1);
+            end
+        end
+
+%         for p1 = sp_g_i(g,1)
+%             for p2 = sp_g_i(g,2)
+%                 gmin = 1;   gpls = 2;
+%                 r11_m = squeeze(LGE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+%                 r12_m = squeeze(LLE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gpls}(1,p2,:));
+%                 r21_m(1:4,1) = 0; 
+%                 rxx_m = cat(1,r11_m,r12_m,r21_m);
+%                 W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+%                 unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(1,p2,:) = W(sn+1:sn+sn,1);
+%             end
+%         end
+        
+        g = 8;
+    %   bound = 3     g = 8
+        for p1 = sp_g_i(g,1)
+            for p2 = 2:(sp_g_i(g,2)-1)
+                gmin = 8;   gpls = 9;
+                r11_m = squeeze(LGE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+                r12_m = squeeze(LLE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gpls}(1,p2,:));
+                r21_m = zeros(4,1); 
+                rxx_m = cat(1,r11_m,r12_m,r21_m);
+                W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+                unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(1,p2,:) = W(sn+1:sn+sn,1);
+            end
+        end
+%         for p1 = sp_g_i(g,1)
+%             for p2 = sp_g_i(g,2)
+%                 gmin = 2;   gpls = 3;
+%                 r11_m = squeeze(LGE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gmin}(p1,p2,:));
+%                 r12_m = squeeze(LLE0_i_m_n(1,:,:))*squeeze(unext_g_p1_p2_n{gpls}(1,p2,:));
+%                 r21_m = zeros(4,1); 
+%                 rxx_m = cat(1,r11_m,r12_m,r21_m);
+%                 W = R_g_p1_p2_m_n{g,p1,p2}*rxx_m;
+%                 unext_g_p1_p2_n{gmin}(p1,p2,:) = W(1:sn,1); unext_g_p1_p2_n{gpls}(1,p2,:) = W(sn+1:sn+sn,1);
+%             end
+%         end
+        
+        g = 9;
         
         uprev_g_p1_p2_n = unext_g_p1_p2_n;
     end
-    for g = 1:sg
-        u_g_p1_p2_n_jt{g}(:,:,:,jt) = unext_g_p1_p2_n{g};
-    end
+%     for g = 1:sg
+%         u_g_p1_p2_n_jt{g}(:,:,:,jt) = unext_g_p1_p2_n{g};
+%     end
+u_g_p1_p2_n_jt{1}(:,:,:,jt) = unext_g_p1_p2_n{1};
+u_g_p1_p2_n_jt{2}(:,:,:,jt) = unext_g_p1_p2_n{2};
+u_g_p1_p2_n_jt{3}(:,:,:,jt) = unext_g_p1_p2_n{3};
+u_g_p1_p2_n_jt{4}(:,:,:,jt) = unext_g_p1_p2_n{4};
+u_g_p1_p2_n_jt{5}(:,:,:,jt) = unext_g_p1_p2_n{5};
+u_g_p1_p2_n_jt{6}(:,:,:,jt) = unext_g_p1_p2_n{6};
+u_g_p1_p2_n_jt{7}(:,:,:,jt) = unext_g_p1_p2_n{7};
+u_g_p1_p2_n_jt{8}(:,:,:,jt) = unext_g_p1_p2_n{8};
+u_g_p1_p2_n_jt{9}(:,:,:,jt) = unext_g_p1_p2_n{9};
 end
+
 
 for g = 1:sg
     K_g_p1_p2_jt{g} = zeros(sp_g_i(gmin,1),sp_g_i(gmin,2),sjt);

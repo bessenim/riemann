@@ -3,7 +3,6 @@
 % многомерной модификацией сеточно-характеристического метода, 
 % использующей фундаментальное решение оператора задачи.
 
-% (c) —калько ёрий, ћ‘“» 2017
 
 %function grid_charact()
 format long;
@@ -31,7 +30,7 @@ A_i_m_n(2,:,:) = ...
   0 0       -1/ro   0   0           ;...
   0 -1/ro   0       0   0           ];
 
-sg = 9;                                                                     % количество регионов
+sg = 3;                                                                     % количество регионов
 
 omega = 10;                                                                  %частота действующей силы
 % %¬ременные параметры:
@@ -46,22 +45,10 @@ dmin_i(2) = -600;  dmax_i(2) = 0;
 dmin_g_i = zeros(sg,sdim); dmax_g_i = zeros(sg,sdim);
 dmin_g_i(1,1) = dmin_i(1); dmax_g_i(1,1) = dmin_i(1)/2;
     dmin_g_i(2,1) = dmin_i(1)/2; dmax_g_i(2,1) = dmax_i(1)/2;
-        dmin_g_i(3,1) = dmax_i(1)/2; dmax_g_i(3,1) = dmax_i(1);            % Ћева€ и права€ границы области
-            dmin_g_i(4,1) = dmin_i(1); dmax_g_i(4,1) = dmin_i(1)/2;
-                dmin_g_i(5,1) = dmin_i(1)/2; dmax_g_i(5,1) = dmax_i(1)/2;
-                    dmin_g_i(6,1) = dmax_i(1)/2; dmax_g_i(6,1) = dmax_i(1);  
-                        dmin_g_i(7,1) = dmin_i(1); dmax_g_i(7,1) = dmin_i(1)/2;
-                            dmin_g_i(8,1) = dmin_i(1)/2; dmax_g_i(8,1) = dmax_i(1)/2;
-                                   dmin_g_i(9,1) = dmax_i(1)/2; dmax_g_i(9,1) = dmax_i(1);  
-dmin_g_i(1,2) = dmin_i(2)/3; dmax_g_i(1,2) = dmax_i(2);
-    dmin_g_i(2,2) = dmin_i(2)/3; dmax_g_i(2,2) = dmax_i(2);
-        dmin_g_i(3,2) = dmin_i(2)/3; dmax_g_i(3,2) = dmax_i(2);            % верхние и нижние границы области
-            dmin_g_i(4,2) = 2*dmin_i(2)/3; dmax_g_i(4,2) = dmin_i(2)/3;
-                dmin_g_i(5,2) = 2*dmin_i(2)/3; dmax_g_i(5,2) = dmin_i(2)/3;
-                    dmin_g_i(6,2) = 2*dmin_i(2)/3; dmax_g_i(6,2) = dmin_i(2)/3;  
-                        dmin_g_i(7,2) = dmin_i(2); dmax_g_i(7,2) = 2*dmin_i(2)/3;
-                            dmin_g_i(8,2) = dmin_i(2); dmax_g_i(8,2) = 2*dmin_i(2)/3;
-                                   dmin_g_i(9,2) = dmin_i(2); dmax_g_i(9,2) = 2*dmin_i(2)/3;  
+        dmin_g_i(3,1) = dmax_i(1)/2; dmax_g_i(3,1) = dmax_i(1);             % Ћева€ и права€ границы области
+dmin_g_i(1,2) = dmin_i(2); dmax_g_i(1,2) = dmax_i(2);
+    dmin_g_i(2,2) = dmin_i(2); dmax_g_i(2,2) = dmax_i(2);
+        dmin_g_i(3,2) = dmin_i(2); dmax_g_i(3,2) = dmax_i(2);
     
 %   «адаем пор€док интерпол€ционных полиномов по пространству
 Kmax = 1;  
@@ -72,21 +59,9 @@ sp_g_i = zeros(sg,sdim);
 sp_g_i(1,1) = (sp_i(1)-1)/4 + 1;
     sp_g_i(2,1) = 2*(sp_i(1)-1)/4 + 1;
         sp_g_i(3,1) = (sp_i(1)-1)/4 + 1;
-            sp_g_i(4,1) = (sp_i(1)-1)/4 + 1;
-                sp_g_i(5,1) = 2*(sp_i(1)-1)/4 + 1;
-                    sp_g_i(6,1) = (sp_i(1)-1)/4 + 1;
-                        sp_g_i(7,1) = (sp_i(1)-1)/4 + 1;
-                            sp_g_i(8,1) = 2*(sp_i(1)-1)/4 + 1;
-                                sp_g_i(9,1) = (sp_i(1)-1)/4 + 1;
-sp_g_i(1,2) = (sp_i(2)-1)/3 + 1;
-    sp_g_i(2,2) = (sp_i(2)-1)/3 + 1;
-        sp_g_i(3,2) = (sp_i(2)-1)/3 + 1;
-             sp_g_i(4,2) = (sp_i(2)-1)/3 + 1;
-                sp_g_i(5,2) = (sp_i(2)-1)/3 + 1;
-                    sp_g_i(6,2) = (sp_i(2)-1)/3 + 1;
-                         sp_g_i(7,2) = (sp_i(2)-1)/3 + 1;
-                            sp_g_i(8,2) = (sp_i(2)-1)/3 + 1;
-                                sp_g_i(9,2) = (sp_i(2)-1)/3 + 1;
+sp_g_i(1,2) = sp_i(2);
+    sp_g_i(2,2) = sp_i(2);
+        sp_g_i(3,2) = sp_i(2);
 
 for g = 1:sg
     for i = 1:sdim
@@ -353,16 +328,11 @@ g = 1;
 %   bound = 4   g = 1
     for p1 = 2:(sp_g_i(g,1))
         for p2 = 1
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 4;   gpls = 1;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
+            %   ѕрозрачные граничные услови€
+            A = eye(sn) - squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
+            C = squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
+            B = cat(1,C,A);
+            R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
         end
     end
     clear A C B;
@@ -424,16 +394,11 @@ g = 2;
 %   bound = 4   g = 2
     for p1 = 2:(sp_g_i(g,1))
         for p2 = 1
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 5;   gpls = 2;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
+            %   ѕрозрачные граничные услови€
+            A = eye(sn) - squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
+            C = squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
+            B = cat(1,C,A);
+            R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
         end
     end
     clear A C B;
@@ -475,440 +440,15 @@ g = 3;
 %   bound = 4
     for p1 = 2:(sp_g_i(g,1))
         for p2 = 1
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 6;   gpls = 3;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-        end
-    end
-    clear A C B;
-    
-g = 4;
-%   bound = 1   g = 4
-    for p1 = 1
-        for p2 = 1:(sp_g_i(g,2)-1)
             %   ѕрозрачные граничные услови€
             A = eye(sn) - squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
             C = squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
             B = cat(1,C,A);
             R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
-        end
-    end
-    clear A C B;
-%   bound = 2   g = 4
-%    for p1 = 1:(sp_g_i(g,1))
-%        for p2 = sp_g_i(g,2)
-%             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-%            gmin = 4;   gpls = 1;
-%            C = zeros(sLGE0m+sLLE0m, 2*sn );
-%            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-%            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-%            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-%        end
-%    end
-%    clear A C;
-%   bound = 3   g = 4
-    for p1 = sp_g_i(g,1)
-        for p2 = 2:(sp_g_i(g,2)-1)
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 4;   gpls = 5;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-        end
-    end
-%     for p1 = sp_g_i(g,1)
-%         for p2 = sp_g_i(g,2)
-% %             A = A1adhes_m_n;
-%             A = Asliding_m_n;
-%             gmin = 1;   gpls = 2;
-%             C = zeros(sLGE0m+sLLE0m, 2*sn );
-%             C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-%             C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-%             size(cat(1,C,A))
-%             R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-%         end
-%     end
-    
-    clear A C B;
-%   bound = 4   g = 4
-    for p1 = 2:(sp_g_i(g,1))
-        for p2 = 1
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 7;   gpls = 4;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-        end
-    end
-    clear A C B;
-        
-g = 5;
-%   bound = 1   g = 5
-%     for p1 = 1
-%         for p2 = 1:sp_g_i(g,2)
-%             A = Aadhes_m_n;
-%             gmin = 4;   gpls = 5;
-%             C = zeros(2*sn, 2*sn );
-%             C(1:sn,1:sn) = squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-%             C((sn+1):(2*sn),(sn+1):(2*sn)) = squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-%             B = cat(1,C,A);
-%             R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
-%         end
-%     end
-%     clear A C B;
-%   bound = 2   g = 5
-%    for p1 = 1:(sp_g_i(g,1))
-%        for p2 = sp_g_i(g,2)
-%             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-%            gmin = 5;   gpls = 2;
-%            C = zeros(sLGE0m+sLLE0m, 2*sn );
-%            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-%            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-%            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-%        end
-%    end
-%    clear A C B;
-%   bound = 3   g = 5
-    for p1 = sp_g_i(g,1)
-        for p2 = 2:(sp_g_i(g,2)-1)
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 5;   gpls = 6;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-        end
-    end
-%     for p1 = sp_g_i(g,1)
-%         for p2 = sp_g_i(g,2)
-% %             A = Aadhes_m_n;
-%             A = Asliding_m_n;
-%             gmin = 2;   gpls = 3;
-%             C = zeros(sLGE0m+sLLE0m, 2*sn );
-%             C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-%             C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-% %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-% %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-% %             rank(cat(1,C,A))
-%             R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-%         end
-%     end
-    
-    clear A C B;
-%   bound = 4   g = 5
-    for p1 = 2:(sp_g_i(g,1))
-        for p2 = 1
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 8;   gpls = 5;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-        end
-    end
-    clear A C B;
-        
-g = 6;
-%   bound = 1   g = 6
-%     for p1 = 1
-%         for p2 = 1:sp_g_i(g,2)
-%             A = Aadhes_m_n;
-%             gmin = 5;   gpls = 6;
-%             C = zeros(2*sn, 2*sn );
-%             C(1:sn,1:sn) = squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-%             C((sn+1):(2*sn),(sn+1):(2*sn)) = squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-%             B = cat(1,C,A);
-%             R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
-%         end
-%     end
-%     clear A C B;
-%   bound = 2   g = 6
-%    for p1 = 1:(sp_g_i(g,1))
-%        for p2 = sp_g_i(g,2)
-%             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-%            gmin = 6;   gpls = 3;
-%            C = zeros(sLGE0m+sLLE0m, 2*sn );
-%            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-%            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-%            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-%        end
-%    end
-%    clear A C B;
-%   bound = 3   g = 6
-    for p1 = sp_g_i(g,1)
-        for p2 = 1:(sp_g_i(g,2)-1)
-            %   ѕрозрачные граничные услови€
-            A = eye(sn) - squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
-            C = squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
-            B = cat(1,C,A);
-            R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
-        end
-    end
-    clear A C B;
-%   bound = 4
-    for p1 = 2:(sp_g_i(g,1))
-        for p2 = 1
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 9;   gpls = 6;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
         end
     end
     clear A C B;
 
-    g = 7;
-%   bound = 1   g = 7
-    for p1 = 1
-        for p2 = 1:(sp_g_i(g,2)-1)
-            %   ѕрозрачные граничные услови€
-            A = eye(sn) - squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
-            C = squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
-            B = cat(1,C,A);
-            R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
-        end
-    end
-    clear A C B;
-%   bound = 2   g = 7
-%    for p1 = 1:(sp_g_i(g,1))
-%        for p2 = sp_g_i(g,2)
-%             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-%            gmin = 7;   gpls = 4;
-%            C = zeros(sLGE0m+sLLE0m, 2*sn );
-%            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-%            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-%            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-%        end
-%    end
-%    clear A C;
-%   bound = 3   g = 7
-    for p1 = sp_g_i(g,1)
-        for p2 = 2:(sp_g_i(g,2)-1)
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 7;   gpls = 8;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-        end
-    end
-%     for p1 = sp_g_i(g,1)
-%         for p2 = sp_g_i(g,2)
-% %             A = A1adhes_m_n;
-%             A = Asliding_m_n;
-%             gmin = 1;   gpls = 2;
-%             C = zeros(sLGE0m+sLLE0m, 2*sn );
-%             C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-%             C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-%             size(cat(1,C,A))
-%             R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-%         end
-%     end
-    
-    clear A C B;
-%   bound = 4   g = 7
-    for p1 = 2:(sp_g_i(g,1))
-        for p2 = 1
-            %   ѕрозрачные граничные услови€
-            A = eye(sn) - squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
-            C = squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
-            B = cat(1,C,A);
-            R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
-        end
-    end
-    clear A C B;
-        
-g = 8;
-%   bound = 1   g = 8
-%     for p1 = 1
-%         for p2 = 1:sp_g_i(g,2)
-%             A = Aadhes_m_n;
-%             gmin = 7;   gpls = 8;
-%             C = zeros(2*sn, 2*sn );
-%             C(1:sn,1:sn) = squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-%             C((sn+1):(2*sn),(sn+1):(2*sn)) = squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-%             B = cat(1,C,A);
-%             R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
-%         end
-%     end
-%     clear A C B;
-%   bound = 2   g = 8
-%    for p1 = 1:(sp_g_i(g,1))
-%        for p2 = sp_g_i(g,2)
-%             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-%            gmin = 8;   gpls = 5;
-%            C = zeros(sLGE0m+sLLE0m, 2*sn );
-%            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-%            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-%            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-%        end
-%    end
-%    clear A C B;
-%   bound = 3   g = 8
-    for p1 = sp_g_i(g,1)
-        for p2 = 2:(sp_g_i(g,2)-1)
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 8;   gpls = 9;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-        end
-    end
-%     for p1 = sp_g_i(g,1)
-%         for p2 = sp_g_i(g,2)
-% %             A = Aadhes_m_n;
-%             A = Asliding_m_n;
-%             gmin = 2;   gpls = 3;
-%             C = zeros(sLGE0m+sLLE0m, 2*sn );
-%             C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-%             C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-% %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-% %             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-% %             rank(cat(1,C,A))
-%             R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-%         end
-%     end
-    
-    clear A C B;
-%   bound = 4   g = 5
-    for p1 = 2:(sp_g_i(g,1))
-        for p2 = 1
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 8;   gpls = 5;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-        end
-    end
-    clear A C B;
-        
-g = 6;
-%   bound = 1   g = 6
-%     for p1 = 1
-%         for p2 = 1:sp_g_i(g,2)
-%             A = Aadhes_m_n;
-%             gmin = 5;   gpls = 6;
-%             C = zeros(2*sn, 2*sn );
-%             C(1:sn,1:sn) = squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :));
-%             C((sn+1):(2*sn),(sn+1):(2*sn)) = squeeze(C_p1_p2_m_n{gpls}(1, p2, :, :));
-%             B = cat(1,C,A);
-%             R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
-%         end
-%     end
-%     clear A C B;
-%   bound = 2   g = 6
-%    for p1 = 1:(sp_g_i(g,1))
-%        for p2 = sp_g_i(g,2)
-%             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-%            gmin = 6;   gpls = 3;
-%            C = zeros(sLGE0m+sLLE0m, 2*sn );
-%            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-%            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-%            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-%        end
-%    end
-%    clear A C B;
-%   bound = 3   g = 6
-    for p1 = sp_g_i(g,1)
-        for p2 = 1:(sp_g_i(g,2)-1)
-            %   ѕрозрачные граничные услови€
-            A = eye(sn) - squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
-            C = squeeze(C_p1_p2_m_n{g}(p1,p2, :, :));
-            B = cat(1,C,A);
-            R_g_p1_p2_m_n{g,p1,p2} = inv(transpose(B)*B)*transpose(B);
-        end
-    end
-    clear A C B;
-%   bound = 4
-    for p1 = 2:(sp_g_i(g,1))
-        for p2 = 1
-             A = Aadhes_m_n;
-%            A = Asliding_m_n;
-            gmin = 9;   gpls = 6;
-            C = zeros(sLGE0m+sLLE0m, 2*sn );
-            C(1:sLGE0m,1:sn) = squeeze(LGE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gmin}(p1, sp_g_i(gmin,2), :, :));
-            C((sLGE0m+1):(sLGE0m+sLLE0m),(sn+1):(2*sn)) = squeeze(LLE0_i_m_n(1,:,:))*squeeze(C_p1_p2_m_n{gpls}(p1, 1, :, :));
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(squeeze(C_p1_p2_m_n{gmin}(sp_g_i(gmin,1), p2, :, :)))
-%             rank(cat(1,C,A))
-            R_g_p1_p2_m_n{g,p1,p2} = inv(cat(1,C,A));
-        end
-    end
-    clear A C B;
 
 %%  ‘ормируем базисные полиномы
 H_g_i_pw_k_p = cell(sg,sdim);
