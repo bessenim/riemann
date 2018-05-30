@@ -3,8 +3,6 @@
 % многомерной модификацией сеточно-характеристического метода, 
 % использующей фундаментальное решение оператора задачи.
 
-% (c) Скалько Юрий, МФТИ 2017
-
 function grid_charact_2_1_1_1_4_m()
 format long;
 %% Блок для описания начальных данных:
@@ -17,7 +15,8 @@ sg = 1;
 
 %   Задаем параметры задачи
 for g = 1:sg
-    la_g(g) = 2*270; mu_g(g) = 270; ro_g(g) = 0.003;                        % параметры среды
+    %la_g(g) = 2*270; mu_g(g) = 270; ro_g(g) = 0.003;  
+    la_g(g) = 2; mu_g(g) = 1; ro_g(g) = 1;% параметры среды
 end
 
 A_g_i_m_n = zeros(sg,sdim,sn,sn);
@@ -40,23 +39,23 @@ end
 
 omega =10;                                                                  %частота действующей силы
 % %Временные параметры:
-T = 2.1;
+T = 0.2;
 Ninput= 21;
 
 %   Задаем область, в которой ищем решение
 dmin_i = zeros(1,sdim); dmax_i = zeros(1,sdim);
-dmin_i(1) = -30;  dmax_i(1) = 30;
-dmin_i(2) = -600;  dmax_i(2) = 0;
+dmin_i(1) = -0.5;  dmax_i(1) = 0.5;
+dmin_i(2) = -0.5;  dmax_i(2) = 0.5;
 
 dmin_g_i = zeros(sg,sdim); dmax_g_i = zeros(sg,sdim);
-dmin_g_i(1,1) = dmin_i(1); dmax_g_i(1,1) = dmax_i(1)/2;           % Левая и правая границы области
+dmin_g_i(1,1) = dmin_i(1); dmax_g_i(1,1) = dmax_i(1);           % Левая и правая границы области
 dmin_g_i(1,2) = dmin_i(2); dmax_g_i(1,2) = dmax_i(2);
     
 %   Задаем порядок интерполяционных полиномов по пространству
 Kmax = 1;  
 
 %   Задаем сетку по пространственным переменным x_ii1 и x_ii2
-sp_i = zeros(1,sdim);   sp_i(1) = 2*30+1;  sp_i(2) = 2*300+1;              % Количество узлов сетки-всегда нечетное
+sp_i = zeros(1,sdim);   sp_i(1) = 2*400+1;  sp_i(2) = 2*400+1;              % Количество узлов сетки-всегда нечетное
 sp_g_i = zeros(sg,sdim);
 sp_g_i(1,1) = sp_i(1);
 sp_g_i(1,2) = sp_i(2);
@@ -173,6 +172,46 @@ for g = 1:sg
     u0_g_p1_p2_n{g} = zeros( sp_g_i(g,1),sp_g_i(g,2),sn );
 end
 
+g = 1;
+nu = [0,0,0,0,10];
+u0_p1_p2_n = zeros( sp_g_i(g,1),sp_g_i(g,2),sn );
+%squeeze(R_g_i_m_n(g,1,:,:))*squeeze(LAMBD_g_i_m_n(g,1,:,:))*squeeze(L_g_i_m_n(g,1,:,:));
+%u0_test = squeeze(R_g_i_m_n(g,1,:,:)) * transpose(nu);
+% for p1 = (sp_g_i(g,1)-1)/2 - 1:(sp_g_i(g,1)-1)/2 + 2
+%     for p2 = 1:sp_g_i(g,2)
+%         u0_p1_p2_n(p1,p2,:) = u0_test;
+%     end
+% end
+
+for p1 = 1:((sp_g_i(g,1)-1)/2 - 1)
+    for p2 = 1:(sp_g_i(g,2))
+        u0_p1_p2_n(p1,p2,1) = -4;
+        u0_p1_p2_n(p1,p2,2) = -3;
+        u0_p1_p2_n(p1,p2,3) = 1;
+        u0_p1_p2_n(p1,p2,4) = -2;
+        u0_p1_p2_n(p1,p2,5) = 1;
+    end
+end
+for p1 = (sp_g_i(g,1)-1)/2
+    for p2 = 1:(sp_g_i(g,2))
+        u0_p1_p2_n(p1,p2,1) = -4;
+        u0_p1_p2_n(p1,p2,2) = -2.5;
+        u0_p1_p2_n(p1,p2,3) = 1.5;
+        u0_p1_p2_n(p1,p2,4) = 0;
+        u0_p1_p2_n(p1,p2,5) = -0.5;
+    end
+end
+for p1 = ((sp_g_i(g,1)-1)/2 + 1):sp_g_i(g,1)
+    for p2 = 1:(sp_g_i(g,2))
+        u0_p1_p2_n(p1,p2,1) = -4;
+        u0_p1_p2_n(p1,p2,2) = -2;
+        u0_p1_p2_n(p1,p2,3) = 2;
+        u0_p1_p2_n(p1,p2,4) = 2;
+        u0_p1_p2_n(p1,p2,5) = -2;
+    end
+end
+
+u0_g_p1_p2_n{g} = u0_p1_p2_n;
 % g = 2;
 %     u0_p1_p2_n = zeros( sp_g_i(g,1),sp_g_i(g,2),sn );
 %     amplitudeu0 = 0;
@@ -218,9 +257,9 @@ indk1 = 1:sn;  indk2 = 1:sn;
 for g = sg:-1:1
     amplitude_p1w_sp2{g} = zeros(sp_g_i(g,1),1);
     g = 1;
-    amplitude_p1w_sp2{g}((sp_g_i(g,1)+1)/2-1, 1) = 100;    
-        amplitude_p1w_sp2{g}((sp_g_i(g,1)+1)/2, 1) = 100;
-            amplitude_p1w_sp2{g}((sp_g_i(g,1)+1)/2+1, 1) = 100;
+    amplitude_p1w_sp2{g}((sp_g_i(g,1)+1)/2-1, 1) = 0;    
+        amplitude_p1w_sp2{g}((sp_g_i(g,1)+1)/2, 1) = 0;
+            amplitude_p1w_sp2{g}((sp_g_i(g,1)+1)/2+1, 1) = 0;
 
     uprev_g_p1_p2_n = u0_g_p1_p2_n;
     
@@ -273,7 +312,7 @@ g = 1;
         unext_g_c_p1_p2_n{gint,c}(p1,p2,:) = reshape(W',[1 sp_g_i(g,2)-2 sn ]);
 %   bound = 1   bound = 2   g = 1
     p1 = 1; p2 = sp_g_i(g,2);
-            %   Прозрачные граничные условия + Условия свободной границы
+            %   Прозрачные граничные условия
         gint = g;   gext = B_g_c_bound_ind{g,c,2,2};
         rxx_m = [squeeze(unext_g_c_p1_p2_n{gint,c}(p1,p2,:))];
         W = R_g_c_p1_p2{g,c}{p1,p2}*rxx_m ;
@@ -283,11 +322,13 @@ g = 1;
             %   Условия свободной границы
             gint = g;   gext = B_g_c_bound_ind{g,c,2,2};
             rxx_m = [squeeze(unext_g_c_p1_p2_n{gint,c}(p1,p2,:))]';
-            W = R_g_c_p1_p2{g,c}{2,p2}*rxx_m ;
+            t = (jt-1)*deltat*deltaNinput + point*deltat;
+            W = R_g_c_p1_p2{g,c}{2,p2}*rxx_m;
             unext_g_c_p1_p2_n{gint,c}(p1,p2,:) = reshape(W',[ sp_g_i(g,1)-2 1 sn ]);
+
 %   bound = 2   bound = 3   g = 1
     p1 = sp_g_i(g,1);   p2 = sp_g_i(g,2);
-            %   Условия свободной границы + Прозрачные условия
+            %   Прозрачные граничные условия
             gint = g;   gext = B_g_c_bound_ind{g,c,2,2};
             rxx_m = [squeeze(unext_g_c_p1_p2_n{gint,c}(p1,p2,:))];
             W = R_g_c_p1_p2{g,c}{p1,p2}*rxx_m;
@@ -330,11 +371,19 @@ end
 end
 
 for g = 1:sg
-    K_g_p1_p2_jt{g} = zeros(sp_g_i(g,1),sp_g_i(g,2),sjt);
+    K_g_p1_p2_jt1{g} = zeros(sp_g_i(g,1),sp_g_i(g,2),sjt);
+    K_g_p1_p2_jt2{g} = zeros(sp_g_i(g,1),sp_g_i(g,2),sjt);
+    K_g_p1_p2_jt3{g} = zeros(sp_g_i(g,1),sp_g_i(g,2),sjt);
+    K_g_p1_p2_jt4{g} = zeros(sp_g_i(g,1),sp_g_i(g,2),sjt);
+    K_g_p1_p2_jt5{g} = zeros(sp_g_i(g,1),sp_g_i(g,2),sjt);
 end
 
 for g = 1:sg
-    K_g_p1_p2_jt{g} = (squeeze(u_g_p1_p2_n_jt{g}(:,:,4,:)).^2 + squeeze(u_g_p1_p2_n_jt{g}(:,:,5,:)).^2).^(0.5);
+    K_g_p1_p2_jt1{g} = squeeze(u_g_p1_p2_n_jt{g}(:,:,1,:));
+    K_g_p1_p2_jt2{g} = squeeze(u_g_p1_p2_n_jt{g}(:,:,2,:));
+    K_g_p1_p2_jt3{g} = squeeze(u_g_p1_p2_n_jt{g}(:,:,3,:));
+    K_g_p1_p2_jt4{g} = squeeze(u_g_p1_p2_n_jt{g}(:,:,4,:));
+    K_g_p1_p2_jt5{g} = squeeze(u_g_p1_p2_n_jt{g}(:,:,5,:));
 end
 
 toc;
@@ -342,51 +391,67 @@ toc;
 %%  Графический вывод результатов
 x_p1 = x_p{1,1};   
 x_p2 = x_p{1,2};
-K_p1_p2_jt = K_g_p1_p2_jt{1};
-[sp1,sp2,sj] = size(K_p1_p2_jt);
+K_p1_p2_jt1 = K_g_p1_p2_jt1{1};
+K_p1_p2_jt2 = K_g_p1_p2_jt2{1};
+K_p1_p2_jt3 = K_g_p1_p2_jt3{1};
+K_p1_p2_jt4 = K_g_p1_p2_jt4{1};
+K_p1_p2_jt5 = K_g_p1_p2_jt5{1};
+[sp1,sp2,sj] = size(K_p1_p2_jt1);
 
 x1min = min(x_p1);                       x1max = max(x_p1);
 x2min = min(x_p2);                       x2max = max(x_p2);
+% 
+% Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1_p2_jt, [], 1), [], 2), [], 3);
+% 
+% [X2,X1] = meshgrid(x_p2,x_p1);
+% 
+% [per, sit] = size(T_jt);    clear per;
+% 
+% 
+%         for it=1:1:sit
+%             %surface = reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]);
+%             %vtkwrite('surf.vtk','structured_grid',x_p1,x_p2,'scalars', surface)
+%             %surf(x_p2,x_p1,reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]));
+%             %axis([ x2min x2max x1min x1max Kmin Kmax]);
+%             %pause(1);
+%             %F(it) = getframe; %#ok<AGROW>
+%             %tic
+%             name = sprintf('res%d.vtk', it);
+%             f = fopen(name, 'wb');
+%             fprintf(f, '# vtk DataFile Version 3.0\n');
+%             fprintf(f, 'Exported from MATLAB\n'); % Comment string
+%             fprintf(f, 'BINARY\n');
+%             fprintf(f, 'DATASET STRUCTURED_GRID\n');
+%             fprintf(f, 'DIMENSIONS %d %d 1\n', sp1, sp2);
+%             fprintf(f, 'POINTS %d float\n', sp1 * sp2);
+%             R = zeros(3, sp1, sp2);
+%             R(1, :, :) = X2;
+%             R(2, :, :) = X1;
+%             R(3, :, :) = K_p1_p2_jt(:,:,it);
+%             w = typecast(swapbytes(single(R(:))), 'uint8');
+%             fwrite(f, w);
+%             fprintf(f, 'CELL_DATA %d\n', (sp1-1) * (sp2-1));
+%             % No cell data
+%             fprintf(f, 'POINT_DATA %d\n', sp1 * sp2);
+%             fprintf(f, 'SCALARS z float\nLOOKUP_TABLE default\n');
+%             w = typecast(swapbytes(single(reshape(K_p1_p2_jt(:,:,it),1, []))), 'uint8');
+%             fwrite(f, w);
+%             fclose(f);
+%             %toc
+%         end
 
-Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1_p2_jt, [], 1), [], 2), [], 3);
+plot(x_p1, K_p1_p2_jt1(:,(sp2-1)/2,21), 'DisplayName','sigma11')
+hold on
+plot(x_p1, K_p1_p2_jt2(:,(sp2-1)/2,21), 'DisplayName','sigma22')
+hold on
+plot(x_p1, K_p1_p2_jt3(:,(sp2-1)/2,21), 'DisplayName','sigma12')
+hold on
+plot(x_p1, K_p1_p2_jt4(:,(sp2-1)/2,21), 'DisplayName','v1')
+hold on
+plot(x_p1, K_p1_p2_jt5(:,(sp2-1)/2,21), 'DisplayName','v2')
+hold off
 
-[X2,X1] = meshgrid(x_p2,x_p1);
-
-[per, sit] = size(T_jt);    clear per;
-
-
-        for it=1:1:sit
-            %surface = reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]);
-            %vtkwrite('surf.vtk','structured_grid',x_p1,x_p2,'scalars', surface)
-            %surf(x_p2,x_p1,reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]));
-            %axis([ x2min x2max x1min x1max Kmin Kmax]);
-            %pause(1);
-            %F(it) = getframe; %#ok<AGROW>
-            %tic
-            name = sprintf('res%d.vtk', it);
-            f = fopen(name, 'wb');
-            fprintf(f, '# vtk DataFile Version 3.0\n');
-            fprintf(f, 'Exported from MATLAB\n'); % Comment string
-            fprintf(f, 'BINARY\n');
-            fprintf(f, 'DATASET STRUCTURED_GRID\n');
-            fprintf(f, 'DIMENSIONS %d %d 1\n', sp1, sp2);
-            fprintf(f, 'POINTS %d float\n', sp1 * sp2);
-            R = zeros(3, sp1, sp2);
-            R(1, :, :) = X2;
-            R(2, :, :) = X1;
-            R(3, :, :) = K_p1_p2_jt(:,:,it);
-            w = typecast(swapbytes(single(R(:))), 'uint8');
-            fwrite(f, w);
-            fprintf(f, 'CELL_DATA %d\n', (sp1-1) * (sp2-1));
-            % No cell data
-            fprintf(f, 'POINT_DATA %d\n', sp1 * sp2);
-            fprintf(f, 'SCALARS z float\nLOOKUP_TABLE default\n');
-            w = typecast(swapbytes(single(reshape(K_p1_p2_jt(:,:,it),1, []))), 'uint8');
-            fwrite(f, w);
-            fclose(f);
-            %toc
-        end
-
+legend({'sigma11', 'sigma22', 'sigma12', 'v1', 'v2'}, 'Location', 'north')
 
 
 %%  Формируем матрицы СЛАУ в точках границы 
@@ -444,7 +509,7 @@ g = 1;
         for p2 = sp_g_i(g,2)
             %   Условия свободной границы
             gint = g;   gext = B_g_c_bound_ind{g,c,2,2};
-            WB = [B_g_c_bound_ind{gint,c,2,1}]; d_g_p1_p2{g}{p1,p2} = [zeros(size(B_g_c_bound_ind{g,c,2,1},1),1)];
+            WB = [B_g_c_bound_ind{gint,c,2,1}]; d_g_p1_p2{g}{p1,p2} = [0; 1];
             WC = [C_g_c_p1_p2_m_n{gint,c}{p1, p2}];
             [R_g_c_p1_p2{g,c}{p1,p2},Rd_g_c_p1_p2{g,c}{p1,p2}] = boundary_solver();
         end
@@ -676,8 +741,8 @@ g = 1;
     COND_g_c_bound_ind{g,c,bound,1} = squeeze(sum(sum(C_g_c_k1_k2_m_n{g,c}(find(lambd_g_i_k(g,1,:)>tollambd),:,:,:),1),2));
     COND_g_c_bound_ind{g,c,bound,2} = 0;
     bound = 2;
-    %   Свободные граничные условия на границе p2 = sp_g_i(g,2)
-    COND_g_c_bound_ind{g,c,bound,1} = squeeze(Bfree_i_m_n(2,:,:));
+    %   Прозрачные граничные условия на границе p2 = sp_g_i(g,2)
+    COND_g_c_bound_ind{g,c,bound,1} = squeeze(sum(sum(C_g_c_k1_k2_m_n{g,c}(:,find(lambd_g_i_k(g,2,:)<-tollambd),:,:),1),2));
     COND_g_c_bound_ind{g,c,bound,2} = 0;
     bound = 3;
     %   Прозрачные граничные условия на границе p1 = sp_g_i(g,1)

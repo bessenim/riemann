@@ -1,0 +1,87 @@
+\documentclass[%
+master,      % тип документа
+subf,        % использовать пакет subcaption для вложенной нумерации рисунков
+href,        % использовать пакет hyperref для создания гиперссылок
+%colorlinks,  % цветные гиперссылки
+%fixint,     % включить прямые знаки интегралов
+]{disser}
+
+\usepackage[
+  a4paper, mag=1000,
+  left=3cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+
+\usepackage[intlimits]{amsmath}
+\usepackage{amssymb,amsfonts}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{verbatim} 
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\ifpdf\usepackage{epstopdf}\fi
+\usepackage[autostyle]{csquotes}
+
+\bibliographystyle{gost2008}
+
+% Шрифт Times в тексте как основной
+%\usepackage{tempora}
+% альтернативный пакет из дистрибутива TeX Live
+%\usepackage{cyrtimes}
+
+% Шрифт Times в формулах как основной
+%\usepackage[varg,cmbraces,cmintegrals]{newtxmath}
+% альтернативный пакет
+%\usepackage[subscriptcorrection,nofontinfo]{mtpro2}
+
+%\usepackage[style=gost-numeric,backend=biber,language=auto,hyperref=auto,autolang=other,sorting=none]{biblatex}
+
+
+% Номера страниц снизу и по центру
+\pagestyle{footcenter}
+\chapterpagestyle{footcenter}
+
+% Точка с запятой в качестве разделителя между номерами цитирований
+%\setcitestyle{semicolon}
+
+% Использовать полужирное начертание для векторов
+\let\vec=\mathbf
+
+% Включать подсекции в оглавление
+\setcounter{tocdepth}{2}
+
+\graphicspath{{fig/}}
+
+\DeclareUnicodeCharacter{2060}{\nolinebreak}
+
+\begin{document}
+\input{Diplom-Title}		
+
+% Переопределение стандартных заголовков
+%\def\contentsname{Содержание}
+%\def\conclusionname{Выводы}
+%\def\bibname{Литература}
+
+
+% Содержание
+\tableofcontents
+
+% Введение
+\input{Diplom-Introduction}
+
+%\input{Diplom-Discussion}
+%\input{Diplom-Conclusion}
+$\pmb{\mathscr{S}}\left( {{R^N}} \right)$.
+
+% Список литературы
+\newpage
+\bibliography{Diploma}
+
+
+% Приложения
+\appendix
+%\input{Diplom-Attached}
+
+\end{document}
+
+

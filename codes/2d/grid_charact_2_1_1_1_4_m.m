@@ -3,8 +3,6 @@
 % многомерной модификацией сеточно-характеристического метода, 
 % использующей фундаментальное решение оператора задачи.
 
-% (c) Скалько Юрий, МФТИ 2017
-
 function grid_charact_2_1_1_1_4_m()
 format long;
 %% Блок для описания начальных данных:
@@ -17,7 +15,7 @@ sg = 3;
 
 %   Задаем параметры задачи
 for g = 1:sg
-    la_g(g) = 2*270; mu_g(g) = 270; ro_g(g) = 0.003;                        % параметры среды
+    la_g(g) = 2*720000000; mu_g(g) = 720000000; ro_g(g) = 2000;                        % параметры среды
 end
 
 A_g_i_m_n = zeros(sg,sdim,sn,sn);
@@ -36,17 +34,17 @@ A_g_i_m_n(g,2,:,:) = ...
   0 0       -1/ro_g(g)   0   0           ;...
   0 -1/ro_g(g)   0       0   0           ];
 end
-                                                                     % количество регионов
+                                                                      % количество регионов
 
-omega =10;                                                                  %частота действующей силы
+omega =1;                                                                  %частота действующей силы
 % %Временные параметры:
 T = 2.1;
-Ninput= 21;
+Ninput= 61;
 
 %   Задаем область, в которой ищем решение
 dmin_i = zeros(1,sdim); dmax_i = zeros(1,sdim);
 dmin_i(1) = -30;  dmax_i(1) = 30;
-dmin_i(2) = -600;  dmax_i(2) = 0;
+dmin_i(2) = -300;  dmax_i(2) = 0;
 
 dmin_g_i = zeros(sg,sdim); dmax_g_i = zeros(sg,sdim);
 dmin_g_i(1,1) = dmin_i(1); dmax_g_i(1,1) = dmin_i(1)/2;
@@ -60,7 +58,7 @@ dmin_g_i(1,2) = dmin_i(2); dmax_g_i(1,2) = dmax_i(2);
 Kmax = 1;  
 
 %   Задаем сетку по пространственным переменным x_ii1 и x_ii2
-sp_i = zeros(1,sdim);   sp_i(1) = 2*30+1;  sp_i(2) = 2*300+1;              % Количество узлов сетки-всегда нечетное
+sp_i = zeros(1,sdim);   sp_i(1) = 2*30+1;  sp_i(2) = 2*150+1;              % Количество узлов сетки-всегда нечетное
 sp_g_i = zeros(sg,sdim);
 sp_g_i(1,1) = (sp_i(1)-1)/4 + 1;
     sp_g_i(2,1) = 2*(sp_i(1)-1)/4 + 1;
@@ -419,11 +417,15 @@ end
 end
 
 for g = 1:sg
-    K_g_p1_p2_jt{g} = zeros(sp_g_i(g,1),sp_g_i(g,2),sjt);
+%     K_g_p1_p2_jt{g} = zeros(sp_g_i(g,1),sp_g_i(g,2),sjt);
+    K_g_1{g} = zeros(sp_g_i(g,1),sp_g_i(g,2),sjt);
+    K_g_2{g} = zeros(sp_g_i(g,1),sp_g_i(g,2),sjt);
 end
 
 for g = 1:sg
-    K_g_p1_p2_jt{g} = (squeeze(u_g_p1_p2_n_jt{g}(:,:,4,:)).^2 + squeeze(u_g_p1_p2_n_jt{g}(:,:,5,:)).^2).^(0.5);
+%     K_g_p1_p2_jt{g} = (squeeze(u_g_p1_p2_n_jt{g}(:,:,4,:)).^2 + squeeze(u_g_p1_p2_n_jt{g}(:,:,5,:)).^2).^(0.5);
+    K_g_1{g} = -(squeeze(u_g_p1_p2_n_jt{g}(:,:,1,:)).*squeeze(u_g_p1_p2_n_jt{g}(:,:,4,:)) + squeeze(u_g_p1_p2_n_jt{g}(:,:,3,:)).*squeeze(u_g_p1_p2_n_jt{g}(:,:,5,:)));
+    K_g_2{g} = -(squeeze(u_g_p1_p2_n_jt{g}(:,:,3,:)).*squeeze(u_g_p1_p2_n_jt{g}(:,:,4,:)) + squeeze(u_g_p1_p2_n_jt{g}(:,:,2,:)).*squeeze(u_g_p1_p2_n_jt{g}(:,:,5,:)));
 end
 
 toc;
@@ -431,13 +433,17 @@ toc;
 %%  Графический вывод результатов
 x_p1 = cat(2,x_p{1,1},x_p{2,1},x_p{3,1});   
 x_p2 = x_p{1,2};
-K_p1_p2_jt = cat(1,K_g_p1_p2_jt{1},K_g_p1_p2_jt{2},K_g_p1_p2_jt{3});
-[sp1,sp2,sj] = size(K_p1_p2_jt);
+% K_p1_p2_jt = cat(1,K_g_p1_p2_jt{1},K_g_p1_p2_jt{2},K_g_p1_p2_jt{3});
+K_p1_p2_jt_1 = cat(1,K_g_1{1},K_g_1{2},K_g_1{3});
+K_p1_p2_jt_2 = cat(1,K_g_2{1},K_g_2{2},K_g_2{3});
+% [sp1,sp2,sj] = size(K_p1_p2_jt);
+[sp1,sp2,sj] = size(K_p1_p2_jt_1);
 
 x1min = min(x_p1);                       x1max = max(x_p1);
 x2min = min(x_p2);                       x2max = max(x_p2);
 
-Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1_p2_jt, [], 1), [], 2), [], 3);
+% Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1_p2_jt, [], 1), [], 2), [], 3);
+Kmin = min(min(min(K_p1_p2_jt_1, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1_p2_jt_1, [], 1), [], 2), [], 3);
 
 [X2,X1] = meshgrid(x_p2,x_p1);
 
@@ -445,6 +451,10 @@ Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1
 
 
         for it=1:1:sit
+            ZVEC = zeros(3, sp1, sp2);
+            ZVEC(1, :, :) = K_p1_p2_jt_1(:,:,it);
+            ZVEC(2, :, :) = K_p1_p2_jt_2(:,:,it);
+            ZVEC(3, :, :) = 0;
             %surface = reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]);
             %vtkwrite('surf.vtk','structured_grid',x_p1,x_p2,'scalars', surface)
             %surf(x_p2,x_p1,reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]));
@@ -461,20 +471,51 @@ Kmin = min(min(min(K_p1_p2_jt, [], 1), [], 2), [], 3);   Kmax = max(max(max(K_p1
             fprintf(f, 'DIMENSIONS %d %d 1\n', sp1, sp2);
             fprintf(f, 'POINTS %d float\n', sp1 * sp2);
             R = zeros(3, sp1, sp2);
-            R(1, :, :) = X2;
-            R(2, :, :) = X1;
-            R(3, :, :) = K_p1_p2_jt(:,:,it);
+            R(1, :, :) = X1;
+            R(2, :, :) = X2;
+            R(3, :, :) = 0;
             w = typecast(swapbytes(single(R(:))), 'uint8');
             fwrite(f, w);
             fprintf(f, 'CELL_DATA %d\n', (sp1-1) * (sp2-1));
             % No cell data
             fprintf(f, 'POINT_DATA %d\n', sp1 * sp2);
-            fprintf(f, 'SCALARS z float\nLOOKUP_TABLE default\n');
-            w = typecast(swapbytes(single(reshape(K_p1_p2_jt(:,:,it),1, []))), 'uint8');
+            fprintf(f, 'VECTORS z float\n');
+            w = typecast(swapbytes(single(ZVEC(:))), 'uint8');
             fwrite(f, w);
             fclose(f);
             %toc
         end
+%         for it=1:1:sit
+%             %surface = reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]);
+%             %vtkwrite('surf.vtk','structured_grid',x_p1,x_p2,'scalars', surface)
+%             %surf(x_p2,x_p1,reshape(K_p1_p2_jt(:,:,it), [ sp1 sp2 ]));
+%             %axis([ x2min x2max x1min x1max Kmin Kmax]);
+%             %pause(1);
+%             %F(it) = getframe; %#ok<AGROW>
+%             %tic
+%             name = sprintf('res%d.vtk', it);
+%             f = fopen(name, 'wb');
+%             fprintf(f, '# vtk DataFile Version 3.0\n');
+%             fprintf(f, 'Exported from MATLAB\n'); % Comment string
+%             fprintf(f, 'BINARY\n');
+%             fprintf(f, 'DATASET STRUCTURED_GRID\n');
+%             fprintf(f, 'DIMENSIONS %d %d 1\n', sp1, sp2);
+%             fprintf(f, 'POINTS %d float\n', sp1 * sp2);
+%             R = zeros(3, sp1, sp2);
+%             R(1, :, :) = X2;
+%             R(2, :, :) = X1;
+%             R(3, :, :) = K_p1_p2_jt(:,:,it);
+%             w = typecast(swapbytes(single(R(:))), 'uint8');
+%             fwrite(f, w);
+%             fprintf(f, 'CELL_DATA %d\n', (sp1-1) * (sp2-1));
+%             % No cell data
+%             fprintf(f, 'POINT_DATA %d\n', sp1 * sp2);
+%             fprintf(f, 'SCALARS z float\nLOOKUP_TABLE default\n');
+%             w = typecast(swapbytes(single(reshape(K_p1_p2_jt(:,:,it),1, []))), 'uint8');
+%             fwrite(f, w);
+%             fclose(f);
+%             %toc
+%         end
 
 
 

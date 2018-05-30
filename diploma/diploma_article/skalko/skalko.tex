@@ -1,0 +1,1281 @@
+% !TeX encoding = windows-1251
+\addcontentsline{etoc}{chapter}{\textit{Surname1 A1.\,B1., Surname2 A2.\,B2.} Title}
+
+\begin{abstract}
+В работе изложено решение обобщенной задачи Римана о распаде разрыва для гиперболических систем линейных дифференциальных уравнений первого порядка с постоянными коэффициентами, с произвольным количеством пространственных переменных. Предложенный алгоритм сводит задачу нахождения значений переменных по обе стороны поверхности разрыва начальных данных к решению системы алгебраических уравнений с правой частью, зависящей от значений переменных в начальный момент времени в конечном числе точек. Решение обобщенной задачи Римана о распаде разрыва использовано для построения вычислительных алгоритмов  решения начально-краевых задач для гиперболических систем линейных дифференциальных уравнений.
+
+\kwr распад разрыва, условия сопряжения, гиперболические системы, обобщенные функции, задача Коши, матрица-функция Грина, характеристики, инварианты Римана, уравнения упругой динамики.
+\end{abstract}
+
+\arthead{Y.\,I. Skalko}
+{Laboratory of Fluid Dynamics and Seismic, Moscow Institute of Physics and Technology\par}
+{The Riemann problem on decay of a discontinuity, in the case of several
+spatial variables}
+
+\begin{abstract}
+The paper set out the solution of the generalized Riemann problem of decay of a
+discontinuity for hyperbolic systems of linear first order differential equations
+with constant coefficients and with any number of spatial variables. The proposed
+algorithm reduces the problem of finding the values of the variables on both
+sides of the discontinuity surface of initial data to a system of algebraic
+equations with the right-hand side, depending on the values of the variables at
+the initial time in a finite number of points. 
+	
+\kwe decay gap, junction conditions, hyperbolic systems,
+generalized functions, Cauchy problem, Green's matrix function, characteristics, Riemann invariants, elastic dynamics equations.
+\end{abstract}
+\bigskip
+
+%Примерная структура статьи.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def \ve{\varepsilon} % USE
+
+\section{Введение} \label{S:intro}
+
+\setcounter{equation}{0}
+Многие эволюционные процессы в физике, биологии, экономике и других прикладных областях моделируются гиперболическими системами линейных дифференциальных уравнений первого порядка. При построении численных алгоритмов решения краевых задач для таких систем уравнений, с использованием аппроксимации решения кусочно-гладкими функциями, ключевым моментом является решение задачи Римана о распаде разрыва. В случае одной пространственной переменной различными авторами \cite{kul}, \cite{lev}, \cite{ska} предложен ряд методов решения задачи Римана. По сути, все эти методы связаны с наличием у гиперболических систем характеристик. В случае многих пространственных переменных методы, основанные на наличии характеристик, уже не работают. И задача Римана, чаще всего, решается в предположении, что вблизи разрыва решение представляет собой плоскую волну, движущуюся вдоль нормали к поверхности разрыва \cite{kul}, \cite{lev}, \cite{kas} . Понятно, что такой подход, далеко не во всех случаях является обоснованным.
+
+\noindent
+Во всех известных автору случаях рассматриваются  такие постановки задачи о распаде разрыва, которые допускают разрывные решения и эти решения не являются "физичными".
+
+\noindent
+Обычно задача Римана решается в предположении, что начальные данные по обе стороны поверхности разрыва заданы постоянными значениями. 
+
+В работе будет приведено решение обобщенной задачи Римана о распаде разрыва для гиперболических систем линейных дифференциальных уравнений первого порядка с кусочно-постоянными коэффициентами, с произвольным количеством пространственных переменных в предположении, что начальные данные по обе стороны поверхности разрыва заданы произвольными функциями. 
+
+\begin{equation} \label{eq:1}
+\frac{{\partial {\mathbf{u}}\left( {t,{\mathbf{x}}} \right)}}{{\partial t}} +
+\sum\limits_{i=1}^N {{\mathbf{A}_i} \frac{{\partial {\mathbf{u}}\left( {t,{\mathbf{x}}}
+\right)}}{{\partial {x_i}}}}  = {\mathbf{0}},\quad {\mathbf{x}} \in {R^N}
+\end{equation}
+
+Полученные результаты будут продемонстрированы на примере системы уравнений, описывающей распространение упругих волн, которую для случая двух пространственных переменных, следуя \cite{lev}, можно записать в виде:
+
+\begin{eqnarray} \label{eq:1_2}
+\frac{\partial}{\partial t} \sigma_{1\:1} - (\lambda+2\mu) \frac{\partial}{\partial x_{1}} v_{1} - \lambda \frac{\partial}{\partial x_{2}} v_{2} = 0, \nonumber
+\\
+\frac{\partial}{\partial t} \sigma_{2\:2} - \lambda \frac{\partial}{\partial x_{1}} v_{1} - (\lambda+2\mu) \frac{\partial}{\partial x_{2}} v_{2} = 0, \nonumber
+\\
+\frac{\partial}{\partial t} \sigma_{1\:2} - \mu \frac{\partial}{\partial x_{1}} v_{2} - \mu \frac{\partial}{\partial x_{2}} v_{1} = 0, 
+\\
+\rho \frac{\partial}{\partial t} v_{1} - \frac{\partial}{\partial x_{1}} \sigma_{1\:1} - \frac{\partial}{\partial x_{2}} \sigma_{1\:2} = 0, \nonumber
+\\
+\rho \frac{\partial}{\partial t} v_{2} - \frac{\partial}{\partial x_{1}} \sigma_{1\:2} - \frac{\partial}{\partial x_{2}} \sigma_{2\:2} = 0, \nonumber
+\end{eqnarray}
+где $ \lambda $ и $ \mu $ коэффициенты Ламе, $ \rho $ масовая плотность среды, $ \sigma_{1\:1} $, $ \sigma_{2\:2} $, $ \sigma_{1\:2} $ компоненты тензора напряжений, $ v_{1} $, $ v_{2} $ компоненты вектора скорости смещений.
+Введя вектор переменных $ \mathbf{u}=(\sigma_{1\:1}, \sigma_{2\:2}, \sigma_{1\:2}, v_{1}, v_{2})^{T} $ и матрицы
+\begin{equation} \label{eq:1_3}
+A_{1}=
+\left( 
+\begin{array}{ccccc}
+              0& 0& 			  0& -(\lambda+2\mu)&    0 \\
+              0& 0& 			  0&        -\lambda&    0 \\
+              0& 0&               0&        	   0& -\mu \\
+-\frac{1}{\rho}& 0&               0&               0&    0 \\
+			  0& 0& -\frac{1}{\rho}&               0&    0 \\
+\end{array}
+\right),\,
+A_{2}=
+\left( 
+\begin{array}{ccccc}
+0&   			 0& 			  0& 			   0&   	 -\lambda \\
+0& 				 0& 			  0& 			   0& -(\lambda+2\mu) \\
+0&      		 0&               0& 			-\mu& 				0 \\
+0& 				 0&               0& -\frac{1}{\rho}& 			    0 \\
+0& -\frac{1}{\rho}& 			  0&               0&  			    0 \\
+\end{array}
+\right) 
+\end{equation}
+
+\noindent
+эту систему уравнений можно записать в виде \eqref{eq:1}.
+
+
+\section{Постановка задачи} \label{S:hom-class}
+
+Задачу Римана о распаде разрыва будем рассматривать в следующей постановке.
+
+\noindent
+Необходимо найти функции $ \mathbf{u}\left( t, \mathbf{x} \right) $, которые почти всюду удовлетворяют  системе линейных дифференциальных уравнений первого порядка с кусочно-постоянными коэффициентами \eqref{eq:1}  и $ \mathbf{u} (t,\mathbf{x})  \to \mathbf{u}_0 (\mathbf{x}) $ при $ t \to +0 $. 
+Коэффициенты, задаваемые матрицами $ \mathbf{A}_i $, постоянны справа и слева гиперплоскости $\Gamma:x_1=0$, но могут претерпевать разрыв при переходе через эту гиперплоскость.
+Начальные данные $ \mathbf{u}_0 (\mathbf{x}) $ полагаем всюду непрерывными, кроме гиперплоскости $\Gamma:x_1=0$. 
+
+\noindent
+Искомое решение должно быть непрерывным по обе стороны гиперплоскости $\Gamma:x_1=0$, но может претерпевать разрывы при переходе через эту гиперплоскость. При этом должны выполняться заданные соотношения (условия сопряжения), связывающие значения переменных по обе стороны  гиперплоскости $\Gamma$. В дальнейшем полагаем, что эти условия сопряжения линейны и однородны:
+\begin{equation} \label{eq:3.3}
+	\mathbf{L} ( \mathbf{u} (t, \mathbf{x} \in \Gamma^-), \mathbf{u} (t, \mathbf{x}\in \Gamma^+) ) = {\mathbf{0}}		
+\end{equation}
+
+\noindent
+Условия сопряжения отражают физические условия, которые необходимо выполнять на границе  $ \Gamma $. 
+В качестве примера таких соотношений, связывающих значения переменных
+$ \mathbf{u} ( t, \mathbf{x} \in \Gamma^- ), \mathbf{u} ( t, \mathbf{x}\in \Gamma^+ ) $, можно рассмотреть, для случая системы уравнений упругой динамики, \guillemotleft{}условия полного слипания\guillemotright{}, состоящие в том, что при переходе через гиперплоскость $ \Gamma $ непрерывны компоненты вектора смещений и выполнен третий закон Ньютона - силы действующие с разных сторон гиперплоскости равны по величине и противоположно направлены:
+\begin{eqnarray}  \label{eq:3.1}
+v_{1} \left( t, \,{\mathbf{x}} \in \Gamma^- \right) &= v_{1} \left( t, \,{\mathbf{x}} \in \Gamma^+ \right) \nonumber
+\\
+v_{2} \left( t, \,{\mathbf{x}} \in \Gamma^- \right) &= v_{2} \left( t, \,{\mathbf{x}} \in \Gamma^+ \right) \nonumber
+\\
+\sigma_{1\:1} \left( t, \,{\mathbf{x}} \in \Gamma^- \right) &= \sigma_{1\:1} \left( t, \,{\mathbf{x}} \in \Gamma^+ \right) 
+\\
+\sigma_{1\:2} \left( t, \,{\mathbf{x}} \in \Gamma^- \right) &= \sigma_{1\:2} \left( t, \,{\mathbf{x}} \in \Gamma^+ \right) \nonumber
+\end{eqnarray}
+Или \guillemotleft{}условия проскальзывания без
+трения\guillemotright{}, состоящие в том, что при переходе через гиперплоскость $ \Gamma $  непрерывны нормальные к гиперплоскости компоненты вектора смещений, нормальные к гиперплоскости компоненты силы с разных сторон гиперплоскости равны по величине и противоположно направлены,  тангенциальные компоненты сил, действующих по обе стороны гиперплоскости, равны 0:
+\begin{eqnarray}
+v_{1} \left( t, \,{\mathbf{x}} \in \Gamma^- \right) = v_{1} \left( t, \,{\mathbf{x}} \in \Gamma^+ \right) \nonumber
+\\
+\sigma_{1\:1} \left( t, \,{\mathbf{x}} \in \Gamma^- \right) = \sigma_{1\:1} \left( t, \,{\mathbf{x}} \in \Gamma^+ \right) 
+\\
+\sigma_{1\:2} \left( t, \,{\mathbf{x}} \in \Gamma^- \right) = 0 \nonumber
+\\
+\sigma_{1\:2} \left( t, \,{\mathbf{x}} \in \Gamma^+ \right) = 0 \nonumber
+\end{eqnarray}
+
+Сформулированную постановку будем, следуя \cite{kul}, называть обобщенной задачей
+Римана о распаде разрыва. Обратим внимание, что начальные данные по обе стороны от гиперплоскости $\Gamma$  могут быть произвольными непрерывными функциями, в отличие от  классической задачи Римана, где начальные данные предполагаются константами по обе стороны от гиперплоскости.
+.
+
+\section{Фундаментальное решение.} \label{S:f s}
+
+В дальнейшем изложении будут использоваться понятия и утверждения теории
+обобщенных функций, изложение которой можно найти, например в \cite{gel1}, \cite{gel2} или \cite{vla}.
+
+Определим пространство основных вектор-функций $\pmb{\mathscr{S}}\left( {{R^N}} \right)$.
+Элементами этого пространства будут $M$-мерные вектор-функции ${\boldsymbol{\varphi }} =
+\left( {{\varphi _1},...,{\varphi _M}} \right)^T $, компоненты которых ${\varphi
+_1}\left( {\mathbf{y}} \right),\ldots,{\varphi _M}\left( {\mathbf{y}} \right)$ принадлежат
+пространству $\mathscr{S}\left( {{R^N}} \right)$, которое состоит из функций класса $ C^{\infty}\left( {{R^N}} \right) $, убывающих при $ |y| \to \infty $ вместе со всеми своими производными быстрее любой степени  $ |y|^{-1} $.
+
+\begin{definition}
+Обобщенными вектор-функциями ${\mathbf{f}} = \left( {{f_1},...,{f_M}} \right)^T \in
+\pmb{\mathscr{S'}}\left( R^N \right)$ будем называть линейные непрерывные функционалы на векторном основном
+пространстве $\pmb{\mathscr{S}}\left( R^N \right)$. При этом функционал ${\mathbf{f}}$
+действует на основную вектор-функцию ${\boldsymbol{\varphi }} = \left( {{\varphi
+_1},\ldots,{\varphi _M}} \right)^T $ по формуле $\left( {{\mathbf{f}},{\boldsymbol{\varphi }}}
+\right) = \left( ({{f_1},{\varphi _1}}), \ldots, ({{f_M},{\varphi _M}}) \right)^T $.
+\end{definition}
+
+\begin{definition}
+Обобщенным решением для системы уравнений
+\begin{equation} \label{eq:4}
+	\frac{{\partial {\mathbf{u}}\left( {t,{\mathbf{x}}} \right)}}{{\partial t}} +
+	\sum\limits_{i=1}^N {{{\mathbf{A}}_i}\frac{{\partial {\mathbf{u}}\left( {t,{\mathbf{x}}}
+	\right)}}{{\partial {x_i}}}}  = {\mathbf{f}}\left( {t,{\mathbf{x}}} \right)
+\end{equation}
+
+\noindent
+будем называть обобщенную функцию ${\mathbf{u}}\left( {t,{\mathbf{x}}} \right) \in
+\pmb{\mathscr{S'}}\left( R^{N+1} \right)$, удовлетворяющую этому уравнению в обобщенном смысле, т.е. для
+произвольной основной функции ${\boldsymbol{\varphi }}\left( {t,{\mathbf{x}}} \right) \in
+\pmb{\mathscr{S}}\left( R^{N+1} \right)$ выполняется равенство
+\[
+	\left( {\frac{{\partial {\mathbf{u}}}}{{\partial
+	t}},{\boldsymbol{\varphi }}} \right) + \sum\limits_{i=1}^N {\left(
+	{{{\mathbf{A}}_i}\frac{{\partial {\mathbf{u}}}}{{\partial
+	{x_i}}},{\boldsymbol{\varphi }}} \right)}  = \left(
+	{{\mathbf{f}},{\boldsymbol{\varphi }}}
+	\right)
+\]
+
+\noindent
+${{\mathbf{A}}_i}$ - матрицы коэффициентов системы уравнений \eqref{eq:4}, размера $\left( {M
+\times M} \right)$. 
+\end{definition}
+В дальнейшем будем полагать, что каждая из матриц ${{\mathbf{A}}_i}$ имеет полный набор левых собственных векторов и, следовательно, представима в виде
+\begin{equation} \label{eq:5}
+	{{\mathbf{A}}_i} = {{\mathbf{R}}_i}{{\mathbf{\Lambda }}_i}{{\mathbf{\Omega }}_i}
+\end{equation}
+
+\noindent
+${{\mathbf{\Lambda }}_i}$ - диагональная матрица собственных чисел матрицы ${{\mathbf{A}}_i}$, упорядоченных по не убыванию,
+
+\noindent
+${{\mathbf{\Omega }}_i}$ - матрица, строки которой являются левыми собственными векторами матрицы ${{\mathbf{A}}_i}$, соответствующие собственным числам
+${{\mathbf{\Lambda }}_i}$,
+
+\noindent
+${{\mathbf{R}}_i} = {\mathbf{\Omega }}_i^{ - 1}$- матрица, столбцы которой являются правыми собственными векторами матрицы ${{\mathbf{A}}_i}$.
+
+\begin{definition}
+Фундаментальным решением оператора задачи \eqref{eq:4} называется обобщенная матрица-функция, ${\mathbf{G}}\left( {t,{\mathbf{x}}} \right) \in \pmb{\mathscr{S'}}\left( R^{N+1} \right)$, удовлетворяющая уравнению
+\begin{equation} \label{eq:6}
+	\frac{\partial \mathbf{G} }{\partial t} +
+	\sum\limits_{i=1}^N {{{\mathbf{A}}_i}\frac{\partial \mathbf{G}}{{\partial {x_i}}}}  = \mathbf{I} \,\delta \left( {t,{\mathbf{x}}}
+	\right)
+\end{equation}
+
+\noindent
+${\mathbf{I}}$ -  единичная диагональная матрица  $\left( {M \times M} \right)$.
+\end{definition}
+
+\begin{definition}
+Сверткой ${\mathbf{G}} * {\mathbf{f}}$ обобщенной матрицы-функции ${\mathbf{G}} = G_{ij} \in \pmb{\mathscr{S'}}$ и обобщенной вектор-функции
+${\mathbf{f}} = {f_j} \in \pmb{\mathscr{S'}}$ будем называть  обобщенную вектор-функцию ${\mathbf{u}}
+= {u_i} \in \pmb{\mathscr{S'}}$, такую что ${u_i} = \sum\limits_{j = 1}^M {{G_{i,j}} * {f_j}}
+$, где ${G_{i,j}} * {f_j}$ - свертка ${G_{i,j}}$ и ${f_j}$, как обобщенных
+функций из ${\mathscr{S'}}$.
+\notag
+\end{definition}
+
+\begin{theorem} \label{theorem:1}
+	Пусть ${\bf{f}}\left( {t,{\bf{x}}} \right) \in
+\pmb{\mathscr{S'}}$, таково, что свертка ${\bf{G}} * {\bf{f}}$ существует в $\pmb{\mathscr{S'}}$. Тогда
+	решение уравнения \eqref{eq:4} существует в $\pmb{\mathscr{S'}}$ и дается формулой
+	\begin{equation} \label{eq:7}
+		\mathbf{u} = \mathbf{G} * \mathbf{f}.
+	\end{equation}
+	
+	\noindent
+	Это решение единственно в классе тех функций из $\pmb{\mathscr{S'}}$, для которых существует 	свертка с $ \tilde{\mathbf{G}} $, где $ \tilde{\mathbf{G}} $ - решение уравнения 
+	\begin{equation*} 
+		\frac{\partial \tilde{\mathbf{G}} }{\partial t} +
+		\sum\limits_{i=1}^N \frac{\partial \tilde{\mathbf{G}}}{\partial {x_i}}\mathbf{A}_i  = \mathbf{I} \,\delta \left( {t,{\mathbf{x}}}
+		\right)
+	\end{equation*}
+\end{theorem}
+
+\begin{proof}
+	Пользуясь формулой дифференцирования свертки, получим
+	\[
+		\frac{{\partial {\bf{u}}}}{{\partial t}} + \sum\limits_{i=1}^N
+		{{{\bf{A}}_i}\frac{{\partial {\bf{u}}}}{{\partial {x_i}}}}  
+		=
+		 \frac{{\partial
+		\left( {{\bf{G}} * {\bf{f}}} \right)}}{{\partial t}} + \sum\limits_{i=1}^N
+		{{{\bf{A}}_i}\frac{{\partial \left( {{\bf{G}} * {\bf{f}}} \right)}}{{\partial
+		{x_i}}}}  = \left( {\frac{{\partial {\bf{G}}}}{{\partial t}} + \sum\limits_{i=1}^N
+		{{{\bf{A}}_i}\frac{{\partial {\bf{G}}}}{{\partial {x_i}}}} } \right) * {\bf{f}} 
+		=
+		\delta \left( {t,\mathbf{x}} \right) * {\bf{f}} 
+		= {\bf{f}}.
+	\]
+	
+	\noindent
+	Поэтому формула \eqref{eq:7}, действительно дает решение уравнения \eqref{eq:4}.
+	
+	Докажем единственность решения уравнения \eqref{eq:4} в классе тех обобщенных функций из
+	$\pmb{\mathscr{S'}}$, для которых свертка с $ \tilde{\mathbf{G}} $ существует в $\pmb{\mathscr{S'}}$. Для этого достаточно установить, что соответствующее однородное уравнение
+	\[
+		\frac{{\partial {\mathbf{u}}}}{{\partial t}} +
+		\sum\limits_{i=1}^N {{{\mathbf{A}}_i}\frac{{\partial {\mathbf{u}}}}{{\partial {x_i}}}}  = {\mathbf{0}}
+	\]
+	\noindent
+	имеет только нулевое решение в этом классе. Но это действительно так, поскольку
+	\[
+		\mathbf{u} = \mathbf{I} \,\delta * \mathbf{u}
+		=
+		\left( \frac{\partial \tilde{\mathbf{G}} }{\partial t} + 				\sum\limits_{i=1}^N \frac{\partial \tilde{\mathbf{G}}}{\partial {x_i}}\mathbf{A}_i \right) * \mathbf{u}
+		=
+		\tilde{\mathbf{G}}*\left( \frac{\partial \mathbf{u} }{\partial t} 
+		+ 	
+		\sum\limits_{i=1}^N \mathbf{A}_i \frac{\partial \mathbf{u}}{\partial {x_i}}  \right)  
+		= \mathbf{0}.
+	\]
+\end{proof}
+
+Построим фундаментальное решение оператора задачи \eqref{eq:4}. Обозначим через ${\mathbf{V}}\left( {t,{\boldsymbol{\xi }}} \right) = {F_{\mathbf{x}}}\left[ {\mathbf{G}} \right] $ - преобразование Фурье  ${\mathbf{G}}\left( {t,{\mathbf{x}}} \right)$ по пространственным переменным. Выполним преобразование Фурье уравнений \eqref{eq:6} по пространственным переменным. Учитывая, что $ {F_{\mathbf{x}}}\left[\dfrac{\partial \mathbf{G}}{\partial {x_j}}\right] =  - i{\xi_j}{F_{\mathbf{x}}}\left[\mathbf{G} \right]$, для обобщенной функции $\mathbf{V}\left( {t,{\boldsymbol{\xi }}} \right)$ получаем уравнение
+\begin{equation} \label{eq:8}
+	\frac{{\partial \mathbf{V}}}{{\partial t}} -
+	i\sum\limits_{j=1}^N {{\xi _j}{{\bf{A}}_j}\mathbf{V}}  = \mathbf{I} \,\delta \left( t \right)
+\end{equation}
+
+\noindent
+Решение уравнения \eqref{eq:8} имеет вид
+\[
+	\mathbf{V}\left( {t,\;{\boldsymbol{\xi }}} \right) = \theta \left( t
+	\right) \exp\left({i\sum\limits_{j = 1}^N {{\xi _j}{{\mathbf{A}}_j}t} } \right),
+\]
+
+\noindent
+где $\theta(t)$ - функция Хевисайда
+\[
+	\theta(t) = \begin{cases}
+				0,&\text{если $t \le 0$}
+				\\
+				1,&\text{если $t > 0$;} 
+				\end{cases}.
+\]
+
+\noindent
+Следуя определению матричной экспоненты,
+\[
+	\exp\left({i\sum\limits_{j = 1}^N {{\xi _j}{{\mathbf{A}}_j}t} } \right) = \prod\limits_{j = 1}^N
+	\exp\left({i {{\xi _j}{{\mathbf{A}}_j}t} } \right)  + \sum\limits_{\left| {\boldsymbol{\alpha }} \right| \ge
+	2} {{t^{\left| {\boldsymbol{\alpha }} \right|}}{{\bf{B}}_{\boldsymbol{\alpha }}}\prod\limits_{j =
+	1}^N {{{\left( { - i{\xi _j}} \right)}^{{\alpha _j}}}} }
+\]
+
+\noindent
+Здесь ${\boldsymbol{\alpha }} = \left( {{\alpha _1},{\alpha _2},...,{\alpha _N}} \right)$ - мультииндекс, целочисленный вектор с неотрицательными составляющими ${\alpha _j}$, $\left| {\boldsymbol{\alpha }} \right| = \left( {{\alpha _1} + ... + {\alpha _N}} \right)$, ${{\bf{B}}_{\boldsymbol{\alpha }}}$ - матрицы размера $M \times M$, являющиеся полиномами матриц $ \mathbf{A}_j $ степени не выше $ \left| {\boldsymbol{\alpha }} \right| $.
+
+\noindent
+Учтем \eqref{eq:5}, тогда
+\[
+	\exp\left({i {{\xi _j}{{\mathbf{A}}_j}t} } \right) = {{\bf{R}}_j}\exp\left({i {{\xi _j}{{\mathbf{\Lambda}}_j}t} } \right){{\bf{\Omega }}_j} \,.
+\]
+
+\noindent
+Следовательно
+\[
+	\exp\left({i\sum\limits_{j = 1}^N {{\xi _j}{{\mathbf{A}}_j}t} } \right) = \prod\limits_{j = 1}^N
+	{{\bf{R}}_j}\exp\left({i {{\xi _j}{{\mathbf{\Lambda}}_j}t} } \right){{\bf{\Omega }}_j}  + \sum\limits_{\left| {\boldsymbol{\alpha }} \right| \ge
+	2} {{t^{\left| {\boldsymbol{\alpha }} \right|}}{{\bf{B}}_{\boldsymbol{\alpha }}}\prod\limits_{j =
+	1}^N {{{\left( { - i{\xi _j}} \right)}^{{\alpha _j}}}} } \,.
+\]
+
+\noindent
+Выполняя обратное преобразование Фурье, получим матрицу-функцию Грина
+\[
+	{\bf{G}}\left( {t,{\bf{x}}} \right) = \theta \left( t \right)\left(
+	{\prod\limits_{j = 1}^N {{{\bf{R}}_j}\delta \left( {{\bf{I}}{x_j} - {{\bf{\Lambda
+	}}_j}t} \right){{\bf{\Omega }}_j}}  
+	+
+	\sum\limits_{\left| {\boldsymbol{\alpha }} \right|
+	\ge 2} {{t^{\left| {\boldsymbol{\alpha }} \right|}}{{\bf{B}}_{\boldsymbol{\alpha
+	}}}{D^{\boldsymbol{\alpha }}}\delta \left( {\bf{x}} \right)} } \right)
+\]
+
+\noindent
+Здесь \\
+$\delta \left( {{\bf{I}}{x_j} - {{\bf{\Lambda }}_j}t} \right)$ - диагональные матрицы, в ${k}$- ой строке которых стоит обобщенная функция $\delta \left(
+{{x_j} - \lambda _{j}^{{k}}t} \right)$, $\lambda _{j}^{{k}}$ - ${k}$- ое собственное число матрицы ${{\bf{A}}_j}$, 
+\\
+${D^{\boldsymbol{\alpha }}} = \dfrac{{{\partial ^{\left| {\boldsymbol{\alpha }}
+\right|}}}}{{\partial x_1^{{\alpha _1}}\partial x_2^{{\alpha _2}}...\partial
+x_N^{{\alpha _N}}}}$ - оператор дифференцирования по пространственным переменным.
+
+Рассмотрим сомножитель ${{\bf{R}}_j}\delta \left( {{\bf{I}}{x_j} - {{\bf{\Lambda }}_j}t} \right){{\bf{\Omega }}_j}$. Обозначим через ${{\bf{D}}^{{k}}}$ - квадратную матрицу размера $M \times M$, все элементы которой равны $0$, кроме ${k}$- го элемента главной диагонали, равного $1$. Тогда
+\[
+	{{\bf{R}}_j}\delta \left( {{\bf{I}}{x_j} - {{\bf{\Lambda }}_j}t}
+	\right){{\bf{\Omega }}_j} = \sum\limits_{{k} = 1}^M
+	{{{\bf{R}}_j}{{\bf{D}}^{{k}}}{{\bf{\Omega }}_j}\delta \left( {{x_j} - \lambda
+	_{j}^{{k}}t} \right)}  = \sum\limits_{{k} = 1}^M {{\bf{C}}_{j}^{{k}}\delta
+	\left( {{x_j} - \lambda _{j}^{{k}}t} \right)} \,.
+\]
+
+\noindent
+Следовательно,
+\[
+	\prod\limits_{j = 1}^N {{{\bf{R}}_j}\delta \left( {{\bf{I}}{x_j} - {{\bf{\Lambda
+	}}_j}t} \right){{\bf{\Omega }}_j}}  = \sum\limits_{{k_1} = 1}^M
+	{\sum\limits_{{k_2} = 1}^M {...\sum\limits_{{k_N} = 1}^M
+	{{\bf{C}}_{1}^{{k_1}}{\bf{C}}_{2}^{{k_2}}...{\bf{C}}_{N}^{{k_N}}\delta \left( {{x_1}
+	- \lambda _{1}^{{k_1}}t} \right)\delta \left( {{x_2} - \lambda _{2}^{{k_2}}t}
+	\right)...\delta \left( {{x_N} - \lambda _{N}^{{k_N}}t} \right)} } }
+\]
+
+\noindent
+Если определить: \\
+${\bf{k}} = \left( {{k_1},{k_2},...,{k_N}} \right)$ - мультииндекс, целочисленный вектор с составляющими ${k_j} = 1:M$, \\ 
+${{\bf{C}}^{\bf{k}}} =
+{\bf{C}}_{1}^{{k_1}}{\bf{C}}_{2}^{{k_2}}...{\bf{C}}_{N}^{{k_N}}$ - многоиндексный массив матриц, \\
+${{\bf{\lambda }}^{\bf{k}}} = \left( {\lambda _{1}^{{k_1}},\lambda
+_{2}^{{k_2}},...,\lambda _{N}^{{k_N}}} \right)$ - многоиндексный массив векторов, то
+\[
+	\prod\limits_{j = 1}^N {{{\bf{R}}_j}\delta \left( {{\bf{I}}{x_j} - {{\bf{\Lambda
+	}}_j}t} \right){{\bf{\Omega }}_j}}  = \sum\limits_{\bf{k}}
+	{{{\bf{C}}^{\bf{k}}}\delta \left( {{\bf{x}} - {{\bf{\lambda }}^{\bf{k}}}t}
+	\right)} \,,
+\]
+тогда
+\begin{equation} \label{eq:9}
+	{\bf{G}}\left( {t,{\bf{x}}} \right) 
+	= 
+	\theta \left( t \right) {\sum\limits_{\bf{k}} {{{\bf{C}}^{\bf{k}}}\delta \left( {{\bf{x}} - {{\bf{\lambda
+	}}^{\bf{k}}}t} \right)}  
+	+ 
+	\theta \left( t \right)\sum\limits_{\left| {\boldsymbol{\alpha }} \right| \ge 2}
+	{{t^{\left| {\boldsymbol{\alpha }} \right|}}{{\bf{B}}_{\boldsymbol{\alpha }}}{D^{\boldsymbol{\alpha
+	}}}\delta \left( {\bf{x}} \right)} } \,.
+\end{equation}
+
+Обратим внимание на следующий факт, который будет использован в дальнейшем. Поскольку ${\bf{C}}_{}^{{k_j}} = {{\bf{R}}_j}{{\bf{D}}^{{k_j}}}{{\bf{\Omega
+}}_j}$, то 
+\begin{equation} \label{eq:10}
+	\sum\limits_{{k_j} = 1}^M {{\bf{C}}_{}^{{k_j}}}  = {{\bf{R}}_j}\left(
+	{\sum\limits_{{k_j} = 1}^M {{{\bf{D}}^{{k_j}}}} } \right){{\bf{\Omega }}_j} =
+	{{\bf{R}}_j}{\bf{I}}\,{{\bf{\Omega }}_j} = {\bf{I}} \,.
+\end{equation}
+
+Докажем две Леммы, которые будут существенны в дальнейшем.
+
+\begin{theorem} \label{theorem:2}
+	Пусть $u(\mathbf{x})$ - локально интегрируемая
+	функция в $R^N$. Тогда
+	\[
+	\theta(t) \cdot \delta(\mathbf{x}-\mathbf{a}t) 
+	* 
+	u(\mathbf{x}) \cdot \delta(t) = \theta(t) u(\mathbf{x}-\mathbf{a}t)
+	\]
+\end{theorem}
+
+\begin{proof}
+
+Согласно определению свертки обобщенных функций \cite{vla}, для произвольной основной функции $\varphi(\mathbf{x},t) \in S\left( {{R^{N + 1}}} \right)$ и произвольной последовательности функций
+${\eta _k}\left( {{\bf{x}},\,{\bf{y}},\,t,\,\tau } \right) \in S\left( {{R^{2N +
+2}}} \right)$, сходящейся к $1$ в ${R^{2N + 2}}$ (стр.133 монографии \cite{vla}), справедлива следующая цепочка равенств:
+\begin{equation}
+\begin{aligned}
+% 1-ая строка
+	&\left( \theta(t) \cdot \delta(\mathbf{x}-\mathbf{a}t) * u(\mathbf{x}) \cdot \delta(t),\,\varphi \left( {{\mathbf{x}},\,t} \right) \right)  \ldots 
+	\\
+% 2-ая строка	
+	\mathop  =\limits^{def} & \mathop {\lim }\limits_{k \to \infty }  \left( {\theta \left( t \right) \cdot
+	\delta \left( \mathbf{x} - \mathbf{a}t \right) \cdot u\left( \mathbf{y} \right) \cdot \delta(\tau),\,\;{\eta
+	_k}\left( {{\bf{x}},\,{\bf{y}},\,t,\,\tau } \right)\,\varphi \left( {{\bf{x}} +
+	{\bf{y}},\,t + \tau } \right)} \right)  \ldots
+	\\
+% 3-я строка		
+	=& \mathop {\lim }_{k \to \infty } \left( {\theta \left( t \right) u\left( {\bf{y}} \right) \cdot \delta(\tau),\,\;{\eta _k}\left(
+	{{\bf{a}}t,\,{\bf{y}},\,t,\,\tau} \right)\,\varphi \left( {{\bf{a}}t + {\bf{y}},\,t+\tau}
+	\right)} \right)  \ldots
+	\\
+% 4-я строка	
+	=& \lim_{k \to \infty } \mathop \int \limits_{\Gamma:\tau=0 } \theta \left(t \right) u\left( {\bf{y}} \right){\eta
+	_k}\left( {{\bf{a}}t,\,{\bf{y}},\,t,\,0} \right)\,\varphi \left( {{\bf{a}}t +
+	{\bf{y}},\,t} \right)\,d{\Gamma}  \ldots
+	\\
+% 5-я строка	
+	=& \mathop \int \limits_{ - \infty }^{ + \infty } \theta \left( t
+	\right) u\left( {\bf{y}} \right)\,\varphi \left(
+	{{\bf{a}}t + {\bf{y}},\,t} \right)\,d{\bf{y}}dt 
+	= \mathop \int
+	\limits_{ - \infty }^{ + \infty } \theta \left( t \right) u(\mathbf{x}-\mathbf{a}t)\,\varphi \left(
+	{{\bf{x}},\,t} \right)\,d{\bf{x}}dt  \ldots
+	\\
+% 7-я строка	
+	=& \left( {\theta \left( t \right) u(\mathbf{x}-\mathbf{a}t),\,\varphi \left( {{\bf{x}},\,t} \right)} \right).
+\end{aligned}
+\notag
+\end{equation}
+\noindent
+Тем самым утверждение Леммы доказано.
+\end{proof}
+
+\begin{notation}
+Пусть функция $ u(\mathbf{x}) $ такова, что $ u(\mathbf{x})=0 $, если $ \mathbf{x} \notin G $, где $ G $ - некоторая область в $ R^N $. Проведем через точку $ (t>0,\mathbf{x}) $ прямую линию $ \frac{d\mathbf{x}}{dt} = \mathbf{a} $. Эта прямая пересекает гиперплоскость $ t=0 $ в точке с координатами $ \mathbf{x}-\mathbf{a}t $. Если эта точка пересечения лежит вне области $ G $, то в точке $ (t>0,\mathbf{x}) $  свертка $\theta(t) \cdot \delta(\mathbf{x}-\mathbf{a}t) * u(\mathbf{x}) \cdot \delta(t) =0$.
+\end{notation}
+
+\begin{theorem} \label{theorem:3}
+Пусть $ v(t,\mathbf{x}) $ -
+локально интегрируемая функция в $ R^{N+1} $ и $ v(t,\mathbf{x})=0 \mbox{, при } t \le 0 $, тогда если $ a_1 \ne 0 $, то
+\begin{equation*}
+\theta \left( t \right) \cdot \delta \left( {{\bf{x}} - {\bf{a}}t} \right) *
+v(t,\mathbf{x}) \cdot \delta_{\Gamma:x_1 = 0}
+=
+\frac{1}{{\left| {{a_1}} \right|}} 
+\theta \left( {\frac{{{x_1}}}{{{a_1}}}} \right)
+v\left( t -\frac{x_1}{a_1},\mathbf{x} - \frac{x_1}{a_1} \mathbf{a} \right),
+\end{equation*}
+\noindent
+если $ a_1 = 0 $, то
+
+\begin{equation*}
+\theta \left( t \right) \cdot \delta \left( {{\bf{x}} - {\bf{a}}t} \right) *
+v(t,\mathbf{x}) \cdot \delta_{\Gamma:x_1 = 0}
+= 0.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+Если ${a_1} \ne 0$, для произвольной основной функции $\varphi \left( {{\bf{x}},t} \right) \in S\left( {{R^{N + 1}}} \right)$ и произвольной последовательности функций ${\eta _k}\left( {{\bf{x}},\,{\bf{y}},\,t,\,\tau }
+\right) \in S\left( {{R^{2N + 2}}} \right)$, сходящейся к $1$ в ${R^{2N + 2}}$, справедлива следующая цепочка равенств:
+\begin{equation}
+\begin{aligned}
+	&\left( 
+	\theta(t) \cdot \delta \left( {\bf{x}} - {\bf{a}}t \right) * v(t,\mathbf{x}) \cdot
+	\delta_{\Gamma:x_1 = 0} ,\,\;\varphi \left( {{\bf{x}},t}  \right)
+	\right)\ \ldots 
+	\\
+%2-я строка	
+	\mathop  = \limits^{def}& 
+	\mathop {\lim }\limits_{k \to \infty } 
+	\left( 
+	\theta(t) \cdot \delta \left( {{\bf{x}} - {\bf{a}}t} \right) \cdot v(\tau ,\mathbf{y}) \cdot \delta_{\Gamma:y_1 = 0},\,
+	{\eta _k}\left( {{\bf{x}},\mathbf{y},t,\tau } \right)
+	\varphi
+	\left( {{\bf{x}} + {\bf{y}},t + \tau } \right) 
+	\right) \ldots
+	\\
+%3-я строка		
+	=& \mathop {\lim }\limits_{k \to \infty } 
+	\left( 
+	{\theta(t) v(\tau ,\mathbf{y}) \cdot \delta_{\Gamma:y_1 = 0},\,{\eta_k}\left( {\mathbf{a}t,\mathbf{y},t,\tau } \right)\varphi \left( \mathbf{a}t+\mathbf{y},t + \tau \right)} 
+	\right) \ldots
+	\\
+%4-я строка		
+	=&\mathop \int \limits_{ \mathbf{\Gamma}:y_1=0 } \theta(t') v(\tau' ,\mathbf{y})\,\varphi \left( \mathbf{a}t'+\mathbf{y},t' + \tau' \right)\,d{y_2}, \ldots ,d{y_N},dt'd\tau' \ldots
+	\\
+%5-я строка		
+	=&\frac{1}{\left| a_1 \right|} \mathop \int
+	\limits_{ - \infty }^{ + \infty } 
+	\theta \left( \frac{x_1}{a_1} \right) v\left( t -\frac{x_1}{a_1},\mathbf{x} - \frac{x_1}{a_1} \mathbf{a} \right)
+	\varphi \left( {{\bf{x}},t} \right)d{\bf{x}}dt \ldots
+	\\
+%6-я строка	
+	=&\frac{1}{\left| a_1 \right|} \left(  
+	\theta \left( \frac{x_1}{a_1} \right) v\left( t -\frac{x_1}{a_1},\mathbf{x} - \frac{x_1}{a_1} \mathbf{a} \right),\,\;
+	\varphi \left( {{\bf{x}},t} \right)\right).
+\end{aligned}
+\notag
+\end{equation}
+\noindent
+Тем самым утверждение Леммы для ${a_1} \ne 0$, доказано.
+
+\noindent
+Пусть $ v(t,\mathbf{x})=0 \mbox{, при } t \le 0 $.
+
+\noindent
+Если $t > 0$, ${x_1} < 0$ и ${a_1} > 0,$ то $\theta \left( t \right) \cdot
+\delta \left( {{\bf{x}} - {\bf{a}}t} \right) * v(t,\mathbf{x}) \cdot \delta_{\Gamma:x_1 = 0} = 0$.
+
+\noindent
+Если $t > 0$, ${x_1} < 0$ и $x_1/t \le {a_1} < 0$, то  $\theta \left( t \right) \cdot
+\delta \left( {{\bf{x}} - {\bf{a}}t} \right) * v(t,\mathbf{x}) \cdot \delta_{\Gamma:x_1 = 0} = 0$.
+
+\noindent
+В силу непрерывности свертки, для $t > 0$, ${x_1} < 0$
+\begin{multline*}
+\theta \left( t \right) \cdot 
+\delta \left( {{x_1}} \right) \cdot 
+\delta \left(
+{{x_2} - {a_2}t} \right)...
+\delta \left( {{x_N} - {a_N}t} \right) * 
+v(t,\mathbf{x}) \cdot 
+\delta_{\Gamma:x_1 = 0} = \ldots
+\\
+=\mathop {\lim }\limits_{{a_1} \to 0} 
+\left( 
+{\theta \left( t \right) \cdot
+\delta \left( {{\bf{x}} - {\bf{a}}t} \right) * 
+v(t,\mathbf{x}) \cdot 
+\delta_{\Gamma:x_1 = 0}} 
+\right) = 0
+\end{multline*}
+\noindent
+Точно также, для $t > 0$, ${x_1} > 0$
+\begin{multline*}
+\theta \left( t \right) \cdot 
+\delta \left( {{x_1}} \right) \cdot 
+\delta \left(
+{{x_2} - {a_2}t} \right)...
+\delta \left( {{x_N} - {a_N}t} \right) * 
+v(t,\mathbf{x}) \cdot 
+\delta_{\Gamma:x_1 = 0} = \ldots
+\\
+=\mathop {\lim }\limits_{{a_1} \to 0} 
+\left( 
+{\theta \left( t \right) \cdot
+\delta \left( {{\bf{x}} - {\bf{a}}t} \right) * 
+v(t,\mathbf{x}) \cdot 
+\delta_{\Gamma:x_1 = 0}} 
+\right) = 0
+\end{multline*} 
+
+\noindent
+Отсюда следует справедливость утверждения Леммы для произвольных ${\bf{a}}$.
+\end{proof}
+
+\begin{notation}
+Пусть функция $ v(t,\mathbf{x}) $ такова, что $ v(t,\mathbf{x})=0 $, если $(t,\mathbf{x}) \notin Q $, где $ Q $ - некоторая область в $ T \times R^N $. Проведем через точку $ (t>0,\mathbf{x}) $ прямую линию $ \frac{d\mathbf{x}}{dt} = \mathbf{a} $. Эта прямая пересекает гиперплоскость $ x_1=0 $ в точке с координатами $ \left( t -\frac{x_1}{a_1},\mathbf{x} - \frac{x_1}{a_1} \mathbf{a} \right) $. Если $ \frac{x_1}{a_1} < 0 $  или точка пересечения лежит вне области $ Q $, то в точке $ (t>0,\mathbf{x}) $  свертка $\theta \left( t \right) \cdot \delta \left( {{\bf{x}} - {\bf{a}}t} \right) *
+v(t,\mathbf{x}) \cdot \delta_{\Gamma:x_1 = 0} = 0 $.
+\end{notation}
+
+
+\section{Задача Римана.} \label{Riemann}
+
+Пусть ${\bf{u}}\left( {t,{\bf{x}}} \right)$ - решение задачи Римана \eqref{eq:1}, \eqref{eq:3.3}. Определим функции 
+\[
+\begin{array}{lcl lcl}
+{\mathbf{u}^-}(t,\mathbf{x}) 
+	&= 
+		&\left\{
+		 \begin{array}{l}
+		 {\bf{u}}\left( {t,{\bf{x}}} \right) \mbox{, если } t \ge 0,{x_1} \le 0\\
+		 {\bf{0}} \mbox{, при остальных } \ {t,{\bf{x}}} 
+		 \end{array} 
+	 	 \right.
+			&{\mathbf{u}^+}(t,\mathbf{x}) 
+				&=
+					&\left\{
+		  			\begin{array}{l}
+			  		{\bf{u}}\left( {t,{\bf{x}}} \right)\mbox{, если } t \ge 0  ,{x_1} \ge 0\\
+			  		{\bf{0}} \mbox{, при остальных }  {t,{\bf{x}}} 
+		  			\end{array} 
+	  				\right.
+\\
+\\
+{\mathbf{u}}_0^- (t,\mathbf{x}) 
+	&= 
+   		&\left\{ 
+	     \begin{array}{l}
+		 {{\bf{u}}_0}\left( {\bf{x}} \right) \mbox{, если } {x_1} \le 0\\
+		 {\bf{0}} \mbox{, при остальных } {\bf{x}}
+		 \end{array} 
+	 	 \right.
+	 		&{\bf{u}}_0^+ (t,\mathbf{x}) 
+	 			&= 
+	 			&\left\{
+		  		\begin{array}{l}
+			  	{{\bf{u}}_0}\left( {\bf{x}} \right) \mbox{, если } {x_1} \ge 0\\
+			  	{\bf{0}} \mbox{, при остальных } {\bf{x}}
+		  		\end{array} 
+	  			\right.
+\\
+\\
+\mathbf{v}^-(t,\mathbf{x}) 
+	&= 
+   		&\theta(t)\mathbf{u}\left( {t,{x_1} =  -0,{x_2},...,{x_N}} \right)
+	 		&\mathbf{v}^+(t,\mathbf{x})
+	 			&= 
+	 			&\theta(t)\mathbf{u}\left( {t,{x_1} =  +0,{x_2},...,{x_N}} \right)	  			
+\end{array} \,.
+\]
+
+Покажем, что ${{\bf{u}}^ - }\left( {t,{\bf{x}}} \right)$, рассматриваемая, как обобщенная функция из $\pmb{\mathscr{S'}}$, удовлетворяет уравнению
+\begin{equation} \label{eq:11}
+	\frac{{\partial {{\bf{u}}^ - }}}{{\partial t}} + \sum\limits_{i=1}^N {{\bf{A}}_i^ -
+	\frac{{\partial {{\bf{u}}^ - }}}{{\partial {x_i}}}}	  
+	= 
+	\mathbf{u}_0^-  \cdot \delta_{t=0} -
+		\mathbf{A}_1^- {{\bf{v}}^ - } \cdot \delta_{x_1=0} 
+\end{equation}
+Действительно, учитывая непрерывность $ \mathbf{u}^- $ при $ x_1 \le 0 $, для всех ${\boldsymbol{\varphi }}\left( {t,{\bf{x}}} \right) \in \pmb{\mathscr{S}}$ имеем цепочку равенств:
+\begin{equation}
+\begin{aligned}
+	&\left( 
+		{\frac{\partial \mathbf{u}^-}{\partial t} + \sum_{i=1}^N {\mathbf{A}_i^-
+		\frac{\partial \mathbf{u}^-}{\partial x_i }},\, {\boldsymbol{\varphi}}} 
+	 \right) 
+	=
+	- \int \left(  \frac{\partial \boldsymbol{\varphi}_m}{\partial t} \mathbf{u}^-_m
+	+ 
+	\sum_{i=1}^N 
+		\frac{\partial\boldsymbol{\varphi}_m}{{\partial x_i}} \left( \mathbf{A}_i^- \mathbf{u}^- \right)_m
+	\right)dtd{\bf{x} } \ldots
+	\\
+% Вторая строка
+	=&\int 
+	\boldsymbol{\varphi }_m \left( 
+	\frac{\partial\mathbf{u}^-}{\partial t} 
+	+ 
+	\sum_{i=1}^N {\mathbf{A}_i^- \frac{\partial {\mathbf{u}^-}}{\partial{x_i}}}  
+	\right)_m dtd\mathbf{x}   
+	+ 
+	\int\limits_{\Gamma:t=0} \boldsymbol{\varphi }_m \mathbf{u}^-_m d\mathbf{x} 
+	-
+	\int\limits_{\Gamma:x_1=0} 		\boldsymbol{\varphi }_m \left( \mathbf{A}_1^- \mathbf{u}^- \right)_m dtd\Gamma \ldots
+	\\
+% Пятая строка	
+	=
+	& \int\limits_{\Gamma:t=0} \boldsymbol{\varphi }_m  (\mathbf{u}_0^-)_m d\mathbf{x}  
+	- 
+	\int\limits_{\Gamma:x_1=0} \boldsymbol{\varphi }_m \left(   \mathbf{A}_1^-\mathbf{v}^- 
+		\right)_m dtd\Gamma   
+\end{aligned}
+\notag
+\end{equation}
+откуда и вытекает равенство \eqref{eq:11}.
+
+Аналогично, ${{\bf{u}}^ + }\left( {t,{\bf{x}}} \right)$, рассматриваемая, как обобщенная функция из $\pmb{\mathscr{S'}}$, удовлетворяет равенствам
+\begin{equation} \label{eq:11.1}
+\frac{{\partial {{\bf{u}}^ + }}}{{\partial t}} + \sum\limits_i^N {{\bf{A}}_i^ +
+	\frac{{\partial {{\bf{u}}^ + }}}{{\partial {x_i}}}}  
+	=
+	{\bf{u}}_0^+ \cdot \delta_{t=0} + {\bf{A}}_1^+ {{\bf{v}}^ + } \cdot \delta_{x_1=0}.
+\end{equation}
+
+\section{Задача Римана, одна пространственная переменная.} \label{riemann-once}	
+
+В случае одной пространственной переменной формула \eqref{eq:9}, задающая фундаментальное решение оператора задачи имеет вид
+\[
+\mathbf{G} (t,x)  = \sum\limits_{k = 1}^M
+{\mathbf{R} \mathbf{D}^{k} \mathbf{\Omega } \delta ({x - \lambda _{}^kt}) }
+\]
+Решение уравнения  \eqref{eq:11} можно выписать в виде свертки
+\begin{equation} \label{eq:14}
+	\mathbf{u}^{-} (t,x)  
+	=
+	\sum\limits_{k = 1}^M \mathbf{R}^{-} \mathbf{D}^{k} \mathbf{\Omega }^{-} \delta (x - \lambda_{-}^{k} t) 
+	* 
+	(\mathbf{u}_{0}^{-} \cdot \delta_{t=0} - \mathbf{A}^{-} \mathbf{v}^{-} \cdot \delta_{x=0}) \,.
+\end{equation}
+
+\noindent Используя обозначение ${\bf{C}}_ - ^k = {{\bf{R}}^ - }{{\bf{D}}^k}{{\bf{\Omega
+}}^ - }$, и на основании Леммы~\ref{theorem:2} и Леммы~\ref{theorem:3}, равенство \eqref{eq:14} можем записать
+\begin{equation} \label{eq:15}
+	\mathbf{u}^{-} (t,x)  
+	= 
+	\sum\limits_{k:\,x \le \lambda_{-}^{k} t} \mathbf{C}_{-}^{k} \mathbf{u}_{0}^{-} (x - \lambda_{-}^{k} t)   
+	+ 
+	\sum\limits_{k:\,x > \lambda_{-}^{k} t} \frac{1}{\lambda_{-}^{k}} \mathbf{C}_{-}^{k} \mathbf{A}^{-} \mathbf{v}^{-} (t - x/\lambda_{-}^{k}) \,.
+\end{equation}
+
+\noindent Поскольку ${{\bf{A}}^ - } = {{\bf{R}}^ - }{{\bf{\Lambda }}^ - }{\mathbf{\Omega }^- }$, то $\dfrac{1}{{\lambda _ - ^k}}{\bf{C}}_ - ^k{{\bf{A}}^ - } = {\bf{C}}_ -
+^k$, и \eqref{eq:15} можно переписать
+\begin{equation} \label{eq:16}
+	\mathbf{u}^{-} (t,x)  
+	=
+	\sum\limits_{k:\,x \le \lambda_-^k t} \mathbf{C}_{-}^{k} \mathbf{u}_{0}^{-}(x - \lambda _ - ^kt) 
+	+  
+	\sum\limits_{k:\,x > \lambda_-^k t} \mathbf{C}_{-}^k \mathbf{v}^- (t - x / \lambda_-^k ) \,.
+\end{equation}
+
+\noindent
+Переходя в равенстве \eqref{eq:16} к пределу $x \to  - 0$, получаем 
+\begin{equation} \label{eq:16_1}
+	{{\bf{v}}^ - }\left( {t} \right) 
+	= 
+	{\sum\limits_{ k:\,0 \le \lambda_-^k } {{\mathbf{C}}_ -
+	^k{\mathbf{u}}_0^ - \left( {- \lambda _ - ^kt} \right)}  
+	+ 
+	\sum\limits_{ k:\,0 > \lambda_-^k } {{\bf{C}}_ - ^k{{\bf{v}}^ - }\left( {t}
+	\right)} } \,.
+\end{equation}
+Учитывая \eqref{eq:11},
+\begin{equation} \label{eq:16_2}
+	\sum\limits_{ k:\,0 \le \lambda_-^k } {{\bf{C}}_ - ^k{{\bf{v}}^ - }\left( {t}
+	\right) 
+	= 
+	{\sum\limits_{ k:\,0 \le \lambda_-^k } {{\mathbf{C}}_ -
+	^k{\mathbf{u}}_0^- \left( {- \lambda _-^kt} \right)} } } \,.
+\end{equation}
+В пределе $t \to  + 0$, получаем 
+\begin{equation} \label{eq:16_3}
+	\sum\limits_{ k:\,0 \le \lambda_-^k } \mathbf{C}_- ^k \mathbf{v}^- \left( +0 	\right) 
+	= 
+	\sum\limits_{ k:\,0 \le \lambda_-^k } {\mathbf{C}_-^k \mathbf{u}_0^- \left( -0 \right)}  \,.
+\end{equation}
+
+Рассмотрим прямую линию $ \gamma_k $: $x - \lambda _ - ^kt = 0,\,{\rm{ }} \lambda _ - ^k < 0$. Как следует из \eqref{eq:16}, решение задачи Римана при переходе через эту прямую может претерпевать  разрыв
+\begin{equation} \label{eq:23}
+	\left[ {{{\bf{u}}^ - }\left( {t,x} \right)} \right] = {{\bf{u}}^ - }\left( {t,x
+	> \lambda _ - ^kt} \right) - {{\bf{u}}^ - }\left( {t,x < \lambda _ - ^kt} \right)
+	= {\bf{C}}_ - ^k\left( {{{\bf{v}}^- }\left( +0 \right) - {\bf{u}}_0^- \left( -0
+	\right)} \right) \,.
+\end{equation}
+По условиям постановки задачи   $ \mathbf{u}^{-} (t,x) $ непрерывно при $ t \ge 0, x_1 \le 0 $, следовательно
+\begin{equation} \label{eq:23.1}
+	\mathbf{C}_{-}^{k} \mathbf{v}^{-} (+0) 
+	= 
+	\mathbf{C}_{-}^{k} \mathbf{u}_{0}^{-} (-0), \,\, k: \lambda_{-}^{k} < 0 \,.
+\end{equation}
+Учитывая \eqref{eq:16_3} и \eqref{eq:10}, получаем, что 
+\begin{equation} \label{eq:23.2}
+	\mathbf{v}^{-} (+0) 
+	= 
+	\mathbf{u}_{0}^{-} (-0) \,.
+\end{equation}
+
+Умножим уравнения \eqref{eq:16_2} слева на матрицу $ \mathbf{\Omega }^{-} $, получим систему уравнений 
+\begin{equation} \label{eq:16_3}
+	\mathbf{l}_{k}^{-} \mathbf{v}^{-} (t) 
+	= \mathbf{l}_{k}^{-} \mathbf{u}_{0}^{-} (- \lambda_{-}^{k} t), \,\rm{ }k:  \lambda_{-}^{k} \ge 0.
+\end{equation}
+Таких уравнений будет по количеству неотрицательных собственных чисел матрицы $ \mathbf{A}^{-} $. Остальные уравнения (соответствующие отрицательным собственным числам матрицы $ \mathbf{A}^{-} $, превращаются в тождества вида $ 0=0 $. 
+
+Аналогично \eqref{eq:14}, решение  уравнения  \eqref{eq:11.1} можно выписать в виде свертки
+\[
+	\mathbf{u}^+ (t,x)  
+	=
+	\sum\limits_{k = 1}^M \mathbf{R}^{+} \mathbf{D}^{k} \mathbf{\Omega }^{+} \delta (x - \lambda_{+}^{k} t) 
+	*
+	(\mathbf{u}_{0}^{+} \cdot\delta_{t=0} + \mathbf{A}^{+} \mathbf{v}^{+} \cdot \delta_{x=0}) \,.
+\]
+
+\noindent Введя обозначение ${\bf{C}}_ + ^k = {{\bf{R}}^ + }{{\bf{D}}^k}{{\bf{\Omega }}^ + }$, можем записать
+\begin{equation} \label{eq:19.1}
+	\mathbf{u}^+ (t,x)  
+	= 
+	\sum\limits_{k:\,x \ge \lambda_+^k t } \mathbf{C}_+^k \mathbf{u}_0^+ (x - \lambda_+^k t) 
+		+ 
+		\sum\limits_{k:\,x < \lambda_+^k t } \mathbf{C}_+^k \mathbf{v}^+ (t - x/\lambda _ + ^k) \,.
+\end{equation}
+Переходя в равенстве \eqref{eq:19.1} к пределу $x \to  + 0$, получаем 
+\begin{equation} \label{eq:19_1}
+	\sum\limits_{ k:\,0 \ge \lambda_+^k } \mathbf{C}_+^k {{\mathbf{v}}^+ } (t) 
+	= 
+	\sum\limits_{k:\,0 \ge \lambda_+^k } \mathbf{C}_+^k \mathbf{u}_0^+ (-\lambda_+^k t) \,.
+\end{equation}
+В пределе $t \to  + 0$, получаем 
+\begin{equation} \label{eq:19_3}
+	\sum\limits_{ k:\,0 \ge \lambda_+^k } {{\mathbf{C}}_+^k {{\mathbf{v}}^+ }\left( {+0}
+	\right) 
+	= 
+	{\sum\limits_{ k:\,0 \ge \lambda_+^k } {{\mathbf{C}}_+
+	^k {\mathbf{u}}_0^+ \left( +0 \right)} } } \,.
+\end{equation}
+Аналогично \eqref{eq:23.2}
+\begin{equation} \label{eq:23.3}
+	\mathbf{v}^{+} (+0) 
+	= 
+	\mathbf{u}_{0}^{+} (+0) \,.
+\end{equation}
+Также, аналогично \eqref{eq:14}, получаем
+\begin{equation} \label{eq:16_4}
+	\mathbf{l}_{k}^{+} \mathbf{v}^{+} (t) 
+	= \mathbf{l}_{k}^{+} \mathbf{u}_{0}^{+} ( \lambda_{+}^{k} t), \,\rm{ }k:  \lambda_{+}^{k} \le 0.
+\end{equation}
+
+Объединим равенства \eqref{eq:16_3} и \eqref{eq:16_4} и добавим к ним условия сопряжения \eqref{eq:3.3}, получим систему линейных алгебраических уравнений, которым должны удовлетворять  неизвестные $ \mathbf{v}^- (t) $ и $ \mathbf{v}^+ (t) $.
+\begin{equation} \label{eq:22}
+\left\{ 
+	\begin{aligned}
+		&\mathbf{l}_{k}^{-} \mathbf{v}^{-} (t) 
+		= 
+		\mathbf{l}_{k}^{-} \mathbf{u}_{0}^{-} (- \lambda_{-}^{k} t), \,\rm{ }k:  \lambda_{-}^{k} \ge 0 
+		\\
+		&\mathbf{l}_{k}^{+} \mathbf{v}^{+} (t) 
+		= 
+		\mathbf{l}_{k}^{+} \mathbf{u}_{0}^{+} ( \lambda_{+}^{k} t), \,\rm{ }k:  \lambda_{+}^{k} \le 0.
+		\\
+		&\mathbf{L} \left( \mathbf{v}^- (t)  ,\, \mathbf{v}^+ (t)  \right) 
+		=
+		{\mathbf{0}}				
+	\end{aligned} 
+\right. \,.
+\end{equation}
+
+Необходимым условием существования  однозначного решения обобщенной задачи Римана в рассматриваемой постановке, является условие существования единственного решения системы линейных алгебраических уравнений уравнений \eqref{eq:22}.
+
+Поскольку, следуя \eqref{eq:23.2} и \eqref{eq:23.3}, $ \mathbf{v}^{-} (+0) = \mathbf{u}_{0}^{-} (-0) $ и $ \mathbf{v}^{+} (+0) = \mathbf{u}_{0}^{+} (+0) $, и $ \mathbf{v}^- (+0)  ,\, \mathbf{v}^+ (+0) $ удовлетворяют условиям сопряжения $ \mathbf{L} \left( \mathbf{v}^- (+0)  ,\, \mathbf{v}^+ (+0)  \right) =
+{\mathbf{0}} $, то и начальные условия должны удовлетворять условиям сопряжения 
+\begin{equation} \label{eq:23}
+\mathbf{L} \left( \mathbf{u}_{0}^{-} (-0) ,\, \mathbf{u}_{0}^{+} (+0)  \right) 
+= {\mathbf{0}}.
+\end{equation}
+
+Решим систему уравнений \eqref{eq:22} и определим значение  ${{\bf{v}}^ - }\left( t \right)$ и ${{\bf{v}}^ + }\left( t \right)$ при $t > 0$ по обе стороны точки $x = 0$.
+
+\noindent Формулы \eqref{eq:16} и \eqref{eq:19.1} с полученными зависимостями $ \mathbf{v}^{-} (t) $ и $ \mathbf{v}^{+} (t) $ дают полное решение обобщенной задачи Римана  для случая одной пространственной переменной.
+
+В случае системы уравнений упругости \eqref{eq:1_2}, если в качестве условий сопряжения взяты \guillemotleft{}условия полного слипания\guillemotright{} или \guillemotleft{}условия проскальзывания без
+трения\guillemotright{}, уравнения \eqref{eq:22} и \eqref{eq:23} дают необходимые и достаточные условия существования решения обобщенной задачи Римана в изложенной постановке.
+ 
+\section{Задача Римана, несколько пространственных переменных.} \label{riemann-multi}
+
+Алгоритм решения обобщенной задачи Римана в случае нескольких пространственных переменных в значительной степени аналогичен алгоритму, приведенному выше
+для случая одной пространственной переменной.
+
+Рассмотрим  уравнение  \eqref{eq:11}. Фундаментальное решение оператора задачи задается формулой \eqref{eq:9}
+\[
+	{{\bf{G}}^ - }\left( {t,{\bf{x}}} \right) 
+	= 
+	{\theta \left( t \right) \sum\limits_{\bf{k}} {{\bf{C}}_ - ^{\bf{k}}\delta \left( {{\bf{x}} -
+	{\bm{\lambda }}_-^{\bf{k}} t} \right)}  + \theta \left( t \right) \sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left| {\bm{\alpha }} \right|}}{\bf{B}}_{\bm{\alpha }}^ -
+	{D^{\bm{\alpha }}}\delta \left( {\bf{x}} \right)} } \,. 
+\]
+Решение  уравнения \eqref{eq:11} можно выписать в виде свертки
+\[
+	\mathbf{u}^{-} (t,\mathbf{x}) 
+	=
+	{{\bf{G}}^ - }\left( {t,{\bf{x}}}
+	\right) * \left( {{\bf{u}}_0^ - \delta_{t=0} - {\bf{A}}_1^ - {{\bf{v}}^ - }\delta_{x_1=0}} \right) \,.
+\]
+На основании утверждений Леммы~\ref{theorem:2} и Леммы~\ref{theorem:3}, а также, учитывая, что ${D^{\bm{\alpha }}}\delta \left( {\bf{x}} \right) * {\bf{u}}_0^ - \left( {\bf{x}}
+\right)\cdot\delta \left( t \right) = {D^{\bm{\alpha }}}{\bf{u}}_0^ - \left( {\bf{x}} \right)$, можем записать
+\begin{multline} \label{eq:25}
+	{{\bf{u}}^ - }\left( {t,{\bf{x}}} \right) 
+	=
+	\sum\limits_{\mathbf{k}:\,x_1 \le \lambda_-^{k_1} t } {{\bf{C}}_
+	- ^{\bf{k}}{\bf{u}}_0^ - \left( {{\bf{x}} - {\bm{\lambda }}_-^{\bf{k}}t}
+	\right)} 
+	+ 
+	\sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left|
+	{\bm{\alpha }} \right|}}{\bf{B}}_{\bm{\alpha }}^ - {D^{\bm{\alpha }}}{\bf{u}}_0^
+	- \left( {\bf{x}} \right)} \ldots 
+	 \\
+	+ \sum\limits_{\mathbf{k}:\,x_1 > \lambda_-^{k_1} t }
+	{\frac{1}{{\lambda _ - ^{{k_1}}}}{\bf{C}}_ - ^{\bf{k}}{\bf{A}}_1^ - {{\bf{v}}^ -
+		}\left( {t - \frac{{{x_1}}}{{\lambda _- ^{{k_1}}}},\mathbf{x} - \frac{{{x_1}}}{{\lambda _- ^{{k_1}}}} \boldsymbol{\lambda }_- ^{\bf{k}}} 
+		\right)} \,.
+\end{multline}
+
+Если начальные данные по обе стороны гиперплоскости ${x_1} = 0$ заданы полиномами степени $P$, то в правой части формулы \eqref{eq:25} останется только конечное число слагаемых
+\begin{multline} \label{eq:26}
+	{{\bf{u}}^ - }\left( {t,{\bf{x}}} \right) 
+	=
+	\sum\limits_{\mathbf{k}:\,x_1 \le \lambda_-^{k_1} t } {\bf{C}}_{-}^{\bf{k}} {\bf{u}}_0^{-} (\bf{x} - {\bm{\lambda}}_ - ^{\bf{k}}t) 
+	+ 
+	\sum\limits_{\left| \bm{\alpha} \right|\ge\mathrm{2}}^{\mathrm{P+1}} {{t^{\left|
+	{\bm{\alpha}} \right|}}{\bf{B}}_{\bm{\alpha }}^ - {D^{\bm{\alpha}}}{\bf{u}}_0^- \left( {\bf{x}} \right)} \ldots 
+	\\
+	+ 
+	\sum\limits_{\mathbf{k}:\,x_1 > \lambda_-^{k_1} t }
+	{\frac{1}{{\lambda _ - ^{{k_1}}}}{\bf{C}}_ - ^{\bf{k}}{\bf{A}}_1^ - {{\bf{v}}^{-} } \left( {t - \frac{{{x_1}}}{{\lambda _- ^{{k_1}}}},\mathbf{x} - \frac{{{x_1}}}{{\lambda _- ^{{k_1}}}} \bm{\lambda }_-^{\bf{k}}} \right)} \,.
+\end{multline}
+
+Переходя в \eqref{eq:25} к пределу ${x_1} \to  - 0$, получаем
+\begin{multline*} 
+	{{\bf{I}} {{\bf{v}}^ - } - \sum\limits_{{\bf{k}}:\,\lambda_-^{{k_1}} < 0}^{}
+	{\frac{1}{{\lambda_-^{{k_1}}}}{\bf{C}}_ - ^{\bf{k}}{\bf{A}}_1^ - } } {{\bf{v}}^ - }
+	 =  
+	\sum\limits_{{\bf{k}}:\,\lambda_-^{{k_1}} \ge 0}^{} {{\bf{C}}_ -
+	^{\bf{k}}{\bf{u}}_0^ - \left( { - {{\lambda }}_ - ^{{k_1}}t,{x_2} -
+	{{\lambda }}_ - ^{{k_2}}t,...,{x_N} - {{\lambda }}_ - ^{{k_N}}t} \right)} \ldots
+	\\
+	+ 
+	\sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left|
+	{\bm{\alpha }} \right|}}{\bf{B}}_{\bm{\alpha }}^ - {D^{\bm{\alpha }}}{\bf{u}}_0^
+	- \left( {0,{x_2},...,{x_N}} \right)} \,.
+\end{multline*}
+
+\noindent Так, как ${{\bf{C}}^{\bf{k}}} = {\bf{C}}_{}^{{k_1}}{\bf{C}}_{}^{{k_2}}...{\bf{C}}_{}^{{k_N}}$ и учитывая \eqref{eq:10}, получаем, что
+\begin{multline*} 
+	 {{\bf{I}} {{\bf{v}}^ - } - \sum\limits_{{k_1}:\,\lambda _ - ^{{k_1}} < 0}^{}
+	{\frac{1}{{\lambda _ - ^{{k_1}}}}{\bf{C}}^{{k_1}}_ -  {\bf{A}}_1^ - }{{\bf{v}}^ - } }
+	 =  
+	\sum\limits_{{\bf{k}}:\,\lambda _ - ^{{k_1}} \ge 0}^{} {\mathbf{C}_-^{\bf{k}} {\bf{u}}_0^ - \left( { - {{\lambda }}_ - ^{{k_1}}t,{x_2} -
+	{{\lambda }}_ - ^{{k_2}}t,...,{x_N} - {{\lambda }}_ - ^{{k_N}}t} \right)} \ldots
+	\\
+	+ 
+	\sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left|
+	{\bm{\alpha }} \right|}}{\bf{B}}_{\bm{\alpha }}^ - {D^{\bm{\alpha }}}{\bf{u}}_0^
+	- \left( {0,{x_2},...,{x_N}} \right)} \,.
+\end{multline*}
+
+\noindent Поскольку ${\bf{A}}_1^ -  = {\bf{R}}_1^ - {\bf{\Lambda }}_1^ - {\bf{\Omega }}_1^
+- $, то $\dfrac{1}{{\lambda _ - ^{{k_1}}}}{\bf{C}}_ - ^{{k_1}}{\bf{A}}_1^ -  = {\bf{C}}_ - ^{{k_1}}$, следовательно
+\begin{multline} \label{eq:27}
+	\sum\limits_{k_1:\, \lambda_{-} ^{k_1} \ge 0}^{} {\mathbf{C}}_{-}^{{k_1}} \mathbf{v}^{-}  
+	= 
+	\sum\limits_{\mathbf{k}:\, \lambda_{-}^{k_1} \ge 0}^{} \mathbf{C}_-^{\bf{k}} {\bf{u}}_0^ - \left( { - {{\lambda }}_ - ^{{k_1}}t,{x_2} -
+		{{\lambda }}_ - ^{{k_2}}t,...,{x_N} - {{\lambda }}_ - ^{{k_N}}t} \right) \ldots 
+	\\
+	 + 
+	 \sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left|
+	{\bm{\alpha }} \right|}}{\bf{B}}_{\bm{\alpha }}^ - {D^{\bm{\alpha }}}{\bf{u}}_0^
+	- \left( {0,{x_2},...,{x_N}} \right)} \,.
+\end{multline}
+
+В пределе $t \to  + 0$, получаем 
+\begin{equation} \label{eq:16_3}
+	\sum\limits_{k_1:\, \lambda_{-} ^{k_1} \ge 0}^{} {\mathbf{C}}_{-}^{{k_1}} \mathbf{v}^{-}(t=0,{x_2},...,{x_N})  
+	= 
+	\sum\limits_{k_1:\, \lambda_{-} ^{k_1} \ge 0}^{} {\mathbf{C}}_{-}^{{k_1}} {\bf{u}}_0^ - (x_1=0,{x_2},...,{x_N}) \,.
+\end{equation}
+
+Рассмотрим гиперплоскость ${x_1} - \lambda _ - ^{{k_1}}t = 0,\quad {\rm{ }}\lambda _ - ^{{k_1}} < 0$. Из \eqref{eq:26} следует, что решение обобщенной задачи Римана при переходе через эту гиперплоскость может претерпевать  разрыв 
+\begin{equation}
+	\left[ {{{\bf{u}}^ - }\left( {t,{\bf{x}}} \right)} \right] 
+	=
+	\sum\limits_{k_1: \,x_1=\lambda_-^{k_1} t } \mathbf{C}_-^{k_1} \left( \mathbf{v}^- \left( t=0,{x_2},...,{x_N} \right) - \mathbf{u}_{0}^{-} \left( x_1=0,{x_2},...,{x_N} \right) \right),\quad {\rm{ }}\lambda _ - ^{{k_1}} < 0 \,.
+\end{equation}
+По условиям постановки задачи   $ \mathbf{u}^{-} (t,x) $ непрерывно при $ t \ge 0, x_1 \le 0 $, следовательно
+\begin{equation} \label{eq:23.1}
+	\sum\limits_{k_1: \,x_1=\lambda_-^{k_1} t } \mathbf{C}_-^{k_1} \left( \mathbf{v}^- \left( t=0,{x_2},...,{x_N} \right) - \mathbf{u}_{0}^{-} \left( x_1=0,{x_2},...,{x_N} \right) \right)=0,\quad {\rm{ }}\lambda _ - ^{{k_1}} < 0 \,.
+\end{equation}
+Учитывая \eqref{eq:23.1} и \eqref{eq:16_3}, получаем, что 
+\begin{equation} \label{eq:23.2}
+	\mathbf{v}^- \left( t=0,{x_2},...,{x_N} \right) 
+		= 
+		\mathbf{u}_{0}^{-} \left( x_1=0,{x_2},...,{x_N} \right) \,.
+\end{equation}
+
+
+Умножим равенство \eqref{eq:27} на левые собственные вектора-строки матрицы ${\mathbf{A}}_1^{-} $. Получим уравнения вида 
+\begin{multline} \label{eq:28}
+	{\bf{l}}_{^{{k_1}}}^ - {{\bf{v}}^ - } 
+	= 
+	\sum\limits_{{\bf{k}},\,\lambda _ -
+	^{{k_1}} \ge 0}^{} {{\bf{l}}_{^{{k_1}}}^ - {\bf{C}}_ - ^{\bf{k}}{\bf{u}}_0^ -
+	\left( { - {\bf{\lambda }}_ - ^{{k_1}}t,{x_2} - {\bf{\lambda }}_ -
+	^{{k_2}}t,...,{x_N} - {\bf{\lambda }}_ - ^{{k_N}}t} \right)} \ldots 
+	\\
+	+ \sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left| {\bm{\alpha
+	}} \right|}}{\bf{l}}_{^{{k_1}}}^ - {\bf{B}}_{\bm{\alpha }}^ - {D^{\bm{\alpha
+	}}}{\bf{u}}_0^ - \left( {0,{x_2},...,{x_N}} \right)},\,\;
+	{k_1},\,{\rm{  }}\lambda _ - ^{{k_1}} \ge 0, \, 
+\end{multline}
+по количеству неотрицательных собственных чисел матрицы $ \mathbf{A}_{1}^{-} $.
+
+\noindent Также получим уравнения вида 
+\begin{equation} \label{eq:28.1}
+	0 
+	= 
+	\sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left| {\bm{\alpha
+	}} \right|}}{\bf{l}}_{^{{k_1}}}^ - {\bf{B}}_{\bm{\alpha }}^ - {D^{\bm{\alpha
+	}}}{\bf{u}}_0^ - \left( {0,{x_2},...,{x_N}} \right)},\,\;
+	{k_1},\,{\rm{  }}\lambda _ - ^{{k_1}} < 0, \, 
+\end{equation}
+по количеству отрицательных собственных чисел матрицы $ \mathbf{A}_{1}^{-} $.
+
+Из уравнений \eqref{eq:28.1} следует, что для того, чтобы обобщенная задача Римана имела решение необходимо, чтобы начальные данные удовлетворяли условиям, задаваемым этими уравнениями.
+
+Аналогично, решение  уравнения  \eqref{eq:11.1} имеет вид
+\begin{multline} \label{eq:29}
+	{{\bf{u}}^ + }\left( {t,{\bf{x}}} \right) 
+	= 
+	\sum\limits_{\mathbf{k}:\,x_1 \ge {\lambda}_+^{k_1} t } {{\bf{C}}_
+	+ ^{\bf{k}}{\bf{u}}_0^ + \left( {{\bf{x}} - {\bm{\lambda }}_ + ^{\bf{k}}t}
+	\right)}  
+	+ 
+	\sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left|
+	{\bm{\alpha }} \right|}}{\bf{B}}_{\bm{\alpha }}^ + {D^{\bm{\alpha }}}{\bf{u}}_0^
+	+ \left( {\bf{x}} \right)} \ldots 
+	\\
+	+ 
+	\sum\limits_{\mathbf{k}:\,x_1 < \lambda_+^{k_1} t }
+	{\frac{1}{{\lambda _ - ^{{k_1}}}}{\bf{C}}_ + ^{\bf{k}}{\bf{A}}_1^ + {{\bf{v}}^ +
+	} \left( {t - \frac{{{x_1}}}{{\lambda _+ ^{{k_1}}}},\mathbf{x} - \frac{{{x_1}}}{{\lambda _+ ^{{k_1}}}} \bm{\lambda }_+ ^{\bf{k}}} 
+	\right)} \,.
+\end{multline}
+
+\noindent Переходя в \eqref{eq:29} к пределу ${x_1} \to  + 0$, получаем
+\begin{multline} \label{eq:30}
+	\sum\limits_{{k_1}: \,\lambda _+^{{k_1}} \le 0}^{} {{\bf{C}}_+^{{k_1}}{{\bf{v}}^ + }}  
+	=
+	 \sum\limits_{{\bf{k}}: \,\lambda_+^{{k_1}} \le 0}^{}
+	{{\bf{C}}_ + ^{\bf{k}}{\bf{u}}_0^ + \left( { - {\bf{\lambda }}_ + ^{{k_1}}t,{x_2}
+	- {\bf{\lambda }}_ + ^{{k_2}}t,...,{x_N} - {\bf{\lambda }}_ + ^{{k_N}}t} \right)} \ldots 
+	\\
+	 + \sum\limits_{\left| {\bf{\alpha }} \right| \ge 2} {{t^{\left|
+	{\bf{\alpha }} \right|}}{\bf{B}}_{\bf{\alpha }}^ + {D^{\bf{\alpha }}}{\bf{u}}_0^
+	+ \left( {0,{x_2},...,{x_N}} \right)} \,.
+\end{multline}
+
+Умножим равенство \eqref{eq:30} на левые собственные вектора-строки матрицы ${\mathbf{A}}_1^{+} $. Получим уравнения вида 
+\begin{multline}\label{eq:31}
+	{\bf{l}}_{^{{k_1}}}^ + {{\bf{v}}^ + } 
+	=
+	 \sum\limits_{{\bf{k}}:\,\lambda _+^{{k_1}} \le 0}^{} {{\bf{l}}_{^{{k_1}}}^ + {\bf{C}}_ + ^{\bf{k}}{\bf{u}}_0^ +
+	\left( { - {\bf{\lambda }}_ + ^{{k_1}}t,{x_2} - {\bf{\lambda }}_ +
+	^{{k_2}}t,...,{x_N} - {\bf{\lambda }}_ + ^{{k_N}}t} \right)} \ldots 
+	\\
+	+ \sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left| {\bm{\alpha
+	}} \right|}}{\bf{l}}_{^{{k_1}}}^ + {\bf{B}}_{\bm{\alpha }}^ + {D^{\bm{\alpha
+	}}}{\bf{u}}_0^ + \left( {0,{x_2},...,{x_N}} \right)} {k_1},{\rm{  }}\lambda _ + ^{{k_1}} \le 0 \,.
+\end{multline}
+по количеству неположительных собственных чисел матрицы $ \mathbf{A}_1^{+} $.
+
+\noindent Также получим уравнения вида
+\begin{equation}\label{eq:31.1}
+	0 
+	=
+	+ \sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left| {\bm{\alpha
+	}} \right|}}{\bf{l}}_{^{{k_1}}}^ + {\bf{B}}_{\bm{\alpha }}^ + {D^{\bm{\alpha
+	}}}{\bf{u}}_0^ + \left( {0,{x_2},...,{x_N}} \right)} {k_1},{\rm{  }}\lambda _ + ^{{k_1}} > 0 \,.
+\end{equation}
+по количеству положительных собственных чисел матрицы $ \mathbf{A}_1^{+} $.
+
+Из уравнений \eqref{eq:31.1} следует, что для того, чтобы обобщенная задача Римана имела решение необходимо, чтобы начальные данные также удовлетворяли условиям, задаваемым и этими уравнениями.
+
+Объединим равенства \eqref{eq:28}, \eqref{eq:31} и добавим к ним условия сопряжения \eqref{eq:3.3}, получим систему линейных алгебраических уравнений, которым должны удовлетворять значения решения задачи Римана по обе стороны границы раздела областей для неизвестных
+${{\mathbf{v}}^- } \left( {t,\mathbf{x}} \right)$ и ${{\bf{v}}^ + } \left( {t,\mathbf{x}} \right)$
+\begin{equation} \label{eq:32}
+	\left\{ 
+	\begin{aligned}
+		{\bf{l}}_{k_1}^- {\bf{v}}^- 
+		&=
+		 \sum\limits_{{\bf{k}}: \,\lambda _ -
+		^{{k_1}} \ge 0} {\bf{l}}_{{k_1}}^- {\bf{C}}_ - ^{\bf{k}}{\bf{u}}_0^ -
+		\left( { - {\bf{\lambda }}_ - ^{{k_1}}t,{x_2} - {\bf{\lambda }}_ -
+		^{{k_2}}t,...,{x_N} - {\bf{\lambda }}_ - ^{{k_N}}t} \right) 
+		\\
+		&+ \quad\sum\limits_{\left| {\bm{\alpha }} \right| \ge {2}} {{t^{\left| {\bm{\alpha}} \right|}} {\bf{l}}_{^{{k_1}}}^ - {\bf{B}}_{\bm{\alpha }}^ - {D^{\bm{\alpha
+		}}}{\bf{u}}_0^ - \left( {0,{x_2},...,{x_N}} \right)} ;\quad {\rm{ }}{k_1},{\rm{ 
+		}}\lambda _ - ^{{k_1}} \ge 0
+		\\
+		{\bf{l}}_{^{{k_1}}}^ + {{\bf{v}}^ + } 
+		&=
+		 \sum\limits_{{\bf{k}}: \,\lambda_+^{{k_1}} \le 0} {\bf{l}}_{^{{k_1}}}^ + {\bf{C}}_ + ^{\bf{k}}{\bf{u}}_0^ +
+		\left( { - {\bf{\lambda }}_ + ^{{k_1}}t,{x_2} - {\bf{\lambda }}_ +
+		^{{k_2}}t,...,{x_N} - {\bf{\lambda }}_ + ^{{k_N}}t} \right) 
+		\\
+		&+ \quad\sum\limits_{\left| {\bm{\alpha }} \right| \ge {2} } {{t^{\left| {\bm{\alpha}} \right|}} {\bf{l}}_{^{{k_1}}}^ + {\bf{B}}_{\bm{\alpha }}^ + {D^{\bm{\alpha
+		}}}{\bf{u}}_0^ + \left( {0,{x_2},...,{x_N}} \right)} ;\quad {\rm{ }}{k_1},\,{\rm{ 
+		}}\lambda _ + ^{{k_1}} \le 0
+		\\
+		{\bf{L}}\left( {{{\bf{v}}^ - },\;{{\bf{v}}^ + }} \right) &= \quad {\bf{0}}
+	\end{aligned} 
+	\right. \,.
+\end{equation}
+
+\noindent Для однозначного решения обобщенной задачи Римана необходимо и достаточно, чтобы система уравнений \eqref{eq:32} имела единственное решение.
+
+Решим систему уравнений \eqref{eq:32} и определим значение ${{\mathbf{v}}^- } \left( {t,\mathbf{x}} \right)$ и ${{\bf{v}}^ + } \left( {t,\mathbf{x}} \right)$ при $t>0$ по обе стороны гиперплоскости ${x_1} = 0$.
+
+\noindent Формулы \eqref{eq:26} и \eqref{eq:29} с полученными зависимостями ${{\mathbf{v}}^- } \left( {t,\mathbf{x}} \right)$ и ${{\bf{v}}^ + } \left( {t,\mathbf{x}} \right)$ дают полное решение обобщенной задачи Римана о распаде разрыва для случая многих пространственных переменных.
+
+Обратим внимание, что если начальные данные заданы линейными функциями по обе стороны гиперплоскости ${x_1} = 0$ то система уравнений \eqref{eq:32}, дающая решение
+обобщенной задачи Римана, принимает вид
+\[
+	\left\{ \begin{array}{c}
+	{\bf{l}}_{^{{k_1}}}^ - {{\bf{v}}^ - } = \sum\limits_{{\bf{k}}: \,\lambda _ -
+	^{{k_1}} \ge 0}^{} {{\bf{l}}_{^{{k_1}}}^ - {\bf{C}}_ - ^{\bf{k}}{\bf{u}}_0^ -
+	\left( { - {\bf{\lambda }}_ - ^{{k_1}}t,{x_2} - {\bf{\lambda }}_ -
+	^{{k_2}}t,...,{x_N} - {\bf{\lambda }}_ - ^{{k_N}}t} \right)} ;\quad {\rm{ }}{k_1},{\rm{
+	 }}\lambda _ - ^{{k_1}} \ge 0
+	 \\
+	{\bf{l}}_{^{{k_1}}}^ + {{\bf{v}}^ + } 
+	=
+	 \sum\limits_{{\bf{k}}: \lambda_+^{{k_1}} \le 0}^{} {{\bf{l}}_{^{{k_1}}}^ + {\bf{C}}_ + ^{\bf{k}}{\bf{u}}_0^ +
+	\left( { - {\bf{\lambda }}_ + ^{{k_1}}t,{x_2} - {\bf{\lambda }}_ +
+	^{{k_2}}t,...,{x_N} - {\bf{\lambda }}_ + ^{{k_N}}t} \right)} ;\quad {\rm{ }}{k_1},{\rm{
+	 }}\lambda _ + ^{{k_1}} \le 0
+	 \\
+	{\bf{L}}\left( {{{\bf{v}}^ - },\;{{\bf{v}}^ + }} \right) = {\bf{0}}
+	\end{array} \right. \,.
+\]
+
+При $t \to  + 0$ система уравнений \eqref{eq:32} принимает вид
+\begin{equation} \label{eq:33}
+	\left\{ \begin{array}{c}
+	{\bf{l}}_{^{{k_1}}}^ - {{\bf{v}}^ - } 
+	=
+	{{\bf{l}}_{^{{k_1}}}^ - {\bf{u}}_0^ - \left(
+	{0,{x_2},...,{x_N}} \right)} ;{\rm{ }}{k_1},{\rm{  }}\lambda _ - ^{{k_1}} \ge 0 
+	\\
+	{\bf{l}}_{^{{k_1}}}^ + {{\bf{v}}^ + } 
+	=
+	 {{\bf{l}}_{^{{k_1}}}^ + {\bf{u}}_0^ + \left(
+	{0,{x_2},...,{x_N}} \right)} ;{\rm{ }}{k_1},{\rm{  }}\lambda _ + ^{{k_1}} \le 0\\
+	{\bf{L}}\left( {{{\bf{v}}^ - },\;{{\bf{v}}^ + }} \right) = {\bf{0}}
+	\end{array} \right. \,.
+\end{equation}
+
+\noindent Именно такое \eqref{eq:33} приближенное решение задачи Римана используется при построении алгоритмов решения гиперболических систем дифференциальных уравнений первого порядка \cite{kul}, \cite{lev}.
+
+\begin{notation}
+Если начальные данные таковы, что $\mathbf{u}_0^ + = \mathbf{0}$, то значения ${{\bf{v}}^ - }\left( {t,\mathbf{x}} \right)$ на границе ${x_1} = 0$, полученные путем решения системы уравнений \eqref{eq:32} или, соответственно, системы уравнений \eqref{eq:33}  дают, так называемые, \guillemotleft{}прозрачные граничные условия\guillemotright{} 
+\end{notation}
+
+Если рассматривается система уравнений упругой динамики, а в качестве условий сопряжения берутся \guillemotleft{}условия полного слипания\guillemotright{} или \guillemotleft{} условия проскальзывания без
+трения\guillemotright{}, то система уравнений \eqref{eq:32} или \eqref{eq:33}  имеет единственное решение и следовательно, обобщенная задача Римана также однозначно разрешима. 
+
+\section{Вычислительный алгоритм} \label{algorithm}
+
+Построенное решение обобщенной задачи Римана позволяет сформулировать алгоритм численного решения начально краевых задач для гиперболических систем линейных дифференциальных уравнений первого порядка с постоянными коэффициентами, обладающий рядом замечательных свойств. 
+Продемонстрируем построение алгоритма на примере системы уравнений, описывающей распространение упругих волн для случая одной пространственой переменной, с кусочно-постоянными коэффициентами.
+
+Следуя \cite{lev}, эту систему уравнений можно записать в виде:
+
+\begin{eqnarray} \label{eq:1.2}
+\frac{\partial}{\partial t} \sigma_{1\:1} - (\lambda+2\mu) \frac{\partial}{\partial x_{1}} v_{1} = 0, \nonumber
+\\
+\frac{\partial}{\partial t} \sigma_{2\:2} - \lambda \frac{\partial}{\partial x_{1}} v_{1} = 0, \nonumber
+\\
+\frac{\partial}{\partial t} \sigma_{1\:2} - \mu \frac{\partial}{\partial x_{1}} v_{2} = 0, 
+\\
+\rho \frac{\partial}{\partial t} v_{1} - \frac{\partial}{\partial x_{1}} \sigma_{1\:1} = 0, \nonumber
+\\
+\rho \frac{\partial}{\partial t} v_{2} - \frac{\partial}{\partial x_{1}} \sigma_{1\:2} = 0, \nonumber
+\end{eqnarray}
+где $ \lambda $ и $ \mu $ коэффициенты Ламе, $ \rho $ масовая плотность среды, $ \sigma_{1\:1} $, $ \sigma_{2\:2} $, $ \sigma_{1\:2} $ компоненты тензора напряжений, $ v_{1} $, $ v_{2} $ компоненты вектора скорости смещений.
+Введя вектор переменных $ \mathbf{u}=(\sigma_{1\:1}, \sigma_{2\:2}, \sigma_{1\:2}, v_{1}, v_{2})^{T} $ и матрицы
+\begin{equation} \label{eq:1_3}
+A=
+\left( 
+\begin{array}{ccccc}
+              0& 0& 			  0& -(\lambda+2\mu)&    0 \\
+              0& 0& 			  0&        -\lambda&    0 \\
+              0& 0&               0&        	   0& -\mu \\
+-\frac{1}{\rho}& 0&               0&               0&    0 \\
+			  0& 0& -\frac{1}{\rho}&               0&    0 \\
+\end{array}
+\right)
+\end{equation}
+эту систему уравнений можно записать в виде \eqref{eq:1}. Коэффициенты системы уравнений, задаваемые матрицей $ A $, полагаем кусочно-постоянными. Всюду должны выполняться \guillemotleft{}условия полного слипания\guillemotright{} \eqref{eq:3.1}.
+Задачу решаем на отрезке $ \left[ -1,1 \right]  $ и полагаем, что на концах отрезка заданы \guillemotleft{}прозрачные граничные условия\guillemotright{}.
+
+Разобъем отрезок $ \left[ -1,1 \right]  $ узлами $ x_j, \, j=0:J $, $ x_0 = -1 $, $ x_J = 1 $ на $ J $ равных интервалов $ G_i $, которые будем нумеровать индексом $ i=1:J $. На каждом интервале $ G_i $ определим, расположенные равномерно по интервалу узлы $ x_{il}, \, i=1:J, \, l=0:L  $, $ x_{i0} = x_{i-1} $, $ x_{iL} = x_{i} $.
+
+Решение задачи в момент времени $ t $ на каждом интервале $ G_i $ будем аппроксимировать интерполяционными полиномами $ P_{i}(t,x) $, построенными по значениям решения в узлах $ x_{il}  $. 
+
+Определим равномерную сетку по времени с шагом $ \tau \le \frac{2}{JL} $.
+
+Значения решения в узлах $ x_{il}  $ в момент времени $ t+\tau $ вычисляем путем решения задачи Римана, в соответствии с приведенным выше алгоритмом \eqref{eq:22}.
+
+Обратим внимание, что переход на следующий временной слой осуществляется в 2 этапа. 
+
+\noindent
+На первом этапе на новом временном слое решается задача Римана  для всех узлов $ x_{il}  $. Для каждого такого узла решение задачи Римана зависит от значений начальных данных в конечном (не более $ 2(L+1) $) количестве узлов. Следовательно, первый этап может быть реализован для каждого узла $ x_{il}  $ независимо и выполнен параллельно. 
+
+\noindent
+На втором этапе на новом временном слое для каждого интервала $ G_i $. следует по определенным на предыдущем этапе значениям решения в узлах $ x_{il}  $,  построить интерполяционный полином $ P_{i}(t,x)$. Коэффициенты этого полинома зависят от значений решения в узлах только этого интервала $ G_i $ и следовательно, могут быть вычислены для каждого интервала независимо и параллельно.
+
+\section{Заключение} \label{ending}
+
+В работе построено решение задачи Римана о распаде разрыва для гиперболических
+систем линейных дифференциальных уравнений первого порядка с постоянными
+коэффициентами, с произвольным количеством пространственных переменных.
+Предложенный алгоритм сводит задачу нахождения значений переменных в момент
+времени $t > 0$ по обе стороны поверхности разрыва начальных данных к решению
+системы алгебраических уравнений с правой частью, зависящей от значений
+переменных в начальный момент времени в конечном числе точек.
+
+
+
+\FloatBarrier
+
+\noindent{\bf Благодарности.} Работа выполнена при финансовой поддержке проекта Министерства образования и
+науки РФ \textnumero 3.522.2014/К в лаборатории
+флюидодинамики и сейсмоакустики МФТИ.
+
+\selectlanguage{russian}
+
+\begin{thebibliography}{99}
+
+\bibitem{kul} {\it Куликовский А.Г., Погорелов Н.В., Семенов А.Ю.} Математические вопросы
+численного решения гиперболических систем уравнений. ---
+Москва: Физматлит, 2001.
+
+\bibitem{lev} \textit{LeVeque R.L.} Finite Volume Methods for Hyperbolic Problems. --- Cambridge:
+Cambridge University Press, 2002.
+
+\bibitem{ska} \textit{Скалько Ю.И.} Корректные условия на границе, разделяющей
+подобласти //
+Компьютерные исследования и моделирование --- 2014 --- Т. 6, \textnumero 3 --- С. 347-356.
+
+\bibitem{kas} \textit{Kaser M., Dumbser M.} An Arbitrary High Order
+Discontinuous Galerkin Method for Elastic Waves on Unstructured Meshes - I. The
+Two-Dimensional Isotropic Case with External Source Terms. //
+Geophys. J. Int. --- 2006 --- V. 166 --- P. 855-877.
+
+\bibitem{gel1} \textit{Гельфанд И.М., Шилов Г.Е.} Пространства основных и обобщенных функций. --- Москва:
+Государственное издательство физико-математической литературы, 1958.
+
+\bibitem{gel2} \textit{Гельфанд И.М., Шилов Г.Е.} Обобщенные функции и действия над ними. --- Москва:
+Государственное издательство физико-математической литературы, 1959.
+
+\bibitem{vla} \textit{Владимиров В.С.} Уравнения математической физики. --- Москва: Наука, 1981.
+
+\end{thebibliography}
+
+
+\selectlanguage{english}
+
+\begin{thebibliography}{99}
+\selectlanguage{russian}
+
+\bibitem{kul} {\it Kulikovskii A.G., Pogorelov N.V., Semenov A.Y.} Mathematical problems of
+numerical solution of hyperbolic systems. ---
+Moscow: Physmatlit, 2001.
+
+\bibitem{lev} \textit{LeVeque R.L.} Finite Volume Methods for Hyperbolic Problems. --- Cambridge:
+Cambridge University Press, 2002.
+
+\bibitem{ska} \textit{Skalko Y.I.} The correct conditions on the boundary separating
+subdomains //
+Computer studies and modeling --- 2014 --- V. 6, \textnumero 3 --- P. 347-356.
+
+\bibitem{kas} \textit{Martin Kaser, Michael Dumbser} An Arbitrary High Order
+Discontinuous Galerkin Method for Elastic Waves on Unstructured Meshes - I. The
+Two-Dimensional Isotropic Case with External Source Terms. //
+Geophys. J. Int. --- 2006 --- V. 166 --- P. 855-877.
+
+\bibitem{gel1} \textit{Gelfand I.M., Shilov G.E.} Spaces of fundamental and generalized functions. --- Moscow:
+State Publishing House of Physical and Mathematical Literature, 1958.
+
+\bibitem{gel2} \textit{Gelfand I.M., Shilov G.E.} Generalized functions and operations on them. --- Moscow:
+State Publishing House of Physical and Mathematical Literature, 1959.
+
+\bibitem{vla} \textit{Vladimirov V.S.} Equations of mathematical physics. --- Moscow: Science, 1981.
+
+\end{thebibliography}
+\selectlanguage{russian}
+
+\begin{flushright}
+ \textit{Поступила в редакцию дд.мм.гггг.}
+\end{flushright} 
